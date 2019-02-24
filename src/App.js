@@ -14,7 +14,7 @@ class App extends Component {
   state = {
     username: "",
     password: "",
-    role: 1, //if role == 0, user did not login
+    role: 0, //if role == 0, user did not login
   }
 
   login = (username, password) => {
@@ -44,7 +44,14 @@ class App extends Component {
   }
 
   logout = () => {
-    
+    this.props.cookies.set('username', '');
+    this.props.cookies.set('password', '');
+
+    this.setState({
+      username: "",
+      password: "",
+      role: 0
+    });
   }
 
   add_customer = (customer_info) => {

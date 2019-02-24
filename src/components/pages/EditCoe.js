@@ -118,3 +118,7 @@ const valid_coe = (coe) => {
   }
   return false;
 }
+
+const valid_area_salary = (sal) => {
+  
+}
