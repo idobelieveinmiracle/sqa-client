@@ -18,6 +18,10 @@ export default class LoginForm extends Component {
     this.props.history.push('/');
   }
 
+  componentDidMount = () => {
+    if (this.props.role !== 0) this.props.history.push('/');
+  }
+
   render() {
     return (
       <div className="container">
