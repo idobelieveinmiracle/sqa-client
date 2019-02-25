@@ -14,7 +14,7 @@ class App extends Component {
   state = {
     username: "",
     password: "",
-    role: 0, //if role == 0, user did not login
+    role: 1, //if role == 0, user did not login
   }
 
   login = (username, password) => {

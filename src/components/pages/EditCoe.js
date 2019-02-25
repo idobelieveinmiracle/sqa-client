@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
+import Axios from 'axios';
+import cf from '../../Config';
 
 export default class EditCoe extends Component {
   state = {
     coe: 0,
-    area_1: 0,
-    area_2: 0,
-    area_3: 0,
-    area_4: 0,
+    min_sal: [0, 0, 0, 0, 0],
+    max_sal: [0, 0, 0, 0, 0]
   }
 
   componentDidMount = () => {
@@ -19,10 +19,87 @@ export default class EditCoe extends Component {
     });
   }
 
+  handleSalaryChange = (e) => {
+    let min_sal = this.state.min_sal;
+    let max_sal = this.state.max_sal;
+    switch (e.target.name) {
+      case "area_1_min_salary":        
+        min_sal[1] = e.target.value;
+        break;
+      
+      case "area_2_min_salary":        
+        min_sal[2] = e.target.value;
+        break;
+
+      case "area_3_min_salary":        
+        min_sal[3] = e.target.value;
+        break;
+        
+      case "area_4_min_salary":        
+        min_sal[4] = e.target.value;
+        break;
+
+      case "area_1_max_salary":        
+        max_sal[1] = e.target.value;
+        break;
+      
+      case "area_2_max_salary":        
+        max_sal[2] = e.target.value;
+        break;
+
+      case "area_3_max_salary":        
+        max_sal[3] = e.target.value;
+        break;
+        
+      case "area_4_max_salary":        
+        max_sal[4] = e.target.value;
+        break;
+      default:
+        break;
+    } 
+
+    this.setState({
+      min_sal,
+      max_sal
+    })
+  }
+
   handleSubmit = (e) => {
     e.preventDefault();
+    
+  }
 
-    console.log(valid_coe(this.state.coe))
+  componentWillMount = (e) => {
+    Axios.get(`${cf.host_name}/coefficients`).then(res => {
+      if (res.data[0]) {
+        this.setState({
+          coe: res.data[0].coe
+        });
+      } else {
+        this.setState({ coe: '0' });
+      }
+    }).catch(err => {
+      this.setState({
+        coe: 0
+      });
+    });
+
+    Axios.get(`${cf.host_name}/areas`).then(res => {
+      const areas = res.data;
+
+      const max_sal = [0, ...areas.map(area => area.max_sal)];
+      const min_sal = [0, ...areas.map(area => area.min_sal)];
+
+      this.setState({
+        max_sal,
+        min_sal
+      })
+    }).catch(err => {
+      this.setState({
+        min_sal: [0, 0, 0, 0, 0],
+        max_sal: [0, 0, 0, 0, 0]
+      });
+    })
   }
 
   render() {
@@ -42,52 +119,112 @@ export default class EditCoe extends Component {
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="area_1">Area 1:</label>
-            <input 
-              type="text" 
-              className="form-control" 
-              id="area_1" 
-              name="area_1" 
-              value={this.state.area_1}
-              onChange={ this.handleChange }
-            />
+          <label htmlFor="area_1">Area 1</label>
+          <div className="form-group row">            
+            <div className="col-xs-6">
+              <label htmlFor="area_1_min_salary">Minimum Salary:</label>
+              <input 
+                className="form-control" 
+                type="text" 
+                id="area_1_min_salary"
+                name="area_1_min_salary"
+                value={ this.state.min_sal[1] }
+                onChange={ this.handleSalaryChange }
+              />
+            </div>
+
+            <div className="col-xs-6">
+              <label htmlFor="area_1_max_salary">Maximum Salary:</label>
+              <input 
+                className="form-control" 
+                type="text" 
+                id="area_1_max_salary"
+                name="area_1_max_salary"
+                value={ this.state.max_sal[1] }
+                onChange={ this.handleSalaryChange }
+              />
+            </div>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="area_2">Area 2:</label>
-            <input 
-              type="text" 
-              className="form-control" 
-              id="area_2" 
-              name="area_2" 
-              value={this.state.area_2}
-              onChange={ this.handleChange }
-            />
+          <label htmlFor="area_2">Area 2</label>
+          <div className="form-group row">            
+            <div className="col-xs-6">
+              <label htmlFor="area_2_min_salary">Minimum Salary:</label>
+              <input 
+                className="form-control" 
+                type="text" 
+                id="area_2_min_salary"
+                name="area_2_min_salary"
+                value={ this.state.min_sal[2] }
+                onChange={ this.handleSalaryChange }
+              />
+            </div>
+
+            <div className="col-xs-6">
+              <label htmlFor="area_2_max_salary">Maximum Salary:</label>
+              <input 
+                className="form-control" 
+                type="text" 
+                id="area_2_max_salary"
+                name="area_2_max_salary"
+                value={ this.state.max_sal[2] }
+                onChange={ this.handleSalaryChange }
+              />
+            </div>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="area_3">Area 3:</label>
-            <input 
-              type="text" 
-              className="form-control" 
-              id="area_3" 
-              name="area_3" 
-              value={this.state.area_3}
-              onChange={ this.handleChange }
-            />
+          <label htmlFor="area_3">Area 3</label>
+          <div className="form-group row">            
+            <div className="col-xs-6">
+              <label htmlFor="area_3_min_salary">Minimum Salary:</label>
+              <input 
+                className="form-control" 
+                type="text" 
+                id="area_3_min_salary"
+                name="area_3_min_salary"
+                value={ this.state.min_sal[3] }
+                onChange={ this.handleSalaryChange }
+              />
+            </div>
+
+            <div className="col-xs-6">
+              <label htmlFor="area_3_max_salary">Maximum Salary:</label>
+              <input 
+                className="form-control" 
+                type="text" 
+                id="area_3_max_salary"
+                name="area_3_max_salary"
+                value={ this.state.max_sal[3] }
+                onChange={ this.handleSalaryChange }
+              />
+            </div>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="area_4">Area 4:</label>
-            <input 
-              type="text" 
-              className="form-control" 
-              id="area_4" 
-              name="area_4" 
-              value={this.state.area_4}
-              onChange={ this.handleChange }
-            />
+          <label htmlFor="area_4">Area 4</label>
+          <div className="form-group row">            
+            <div className="col-xs-6">
+              <label htmlFor="area_4_min_salary">Minimum Salary:</label>
+              <input 
+                className="form-control" 
+                type="text" 
+                id="area_4_min_salary"
+                name="area_4_min_salary"
+                value={ this.state.min_sal[4] }
+                onChange={ this.handleSalaryChange }
+              />
+            </div>
+
+            <div className="col-xs-6">
+              <label htmlFor="area_4_max_salary">Maximum Salary:</label>
+              <input 
+                className="form-control" 
+                type="text" 
+                id="area_4_max_salary"
+                name="area_4_max_salary"
+                value={ this.state.max_sal[4] }
+                onChange={ this.handleSalaryChange }
+              />
+            </div>
           </div>
 
           <button type="submit" className="btn btn-default">Save</button>
@@ -120,5 +257,21 @@ const valid_coe = (coe) => {
 }
 
 const valid_area_salary = (sal) => {
-  
+  if (validFloat(sal)) {
+    const sal_num = parseFloat(sal);
+    if (sal_num >= 0.0) return true;
+  }
+  return false;
 }
+
+const valid_area_salaries = (min_sal, max_sal) => {
+  for (let i = 1; i <= 4; i++){
+    if (! valid_area_salary(toString(max_sal[i])) 
+      || ! valid_area_salary(toString(min_sal[i]))) return false;
+    
+    if (parseFloat(min_sal[i]) > parseFloat(max_sal[i])) return false;
+  }
+  return true;
+}
+
+
