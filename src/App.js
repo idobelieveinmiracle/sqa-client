@@ -9,12 +9,13 @@ import CustomerInfo from "./components/pages/CustomerInfo";
 import Admin from './components/pages/Admin';
 import Axios from 'axios';
 import EditCoe from './components/pages/EditCoe';
+import AddCustomer from './components/pages/AddCustomer';
 
 class App extends Component {
   state = {
     username: "",
     password: "",
-    role: 1, //if role == 0, user did not login
+    role: 2, //if role == 0, user did not login
   }
 
   login = (username, password) => {
@@ -79,6 +80,15 @@ class App extends Component {
                 path="/edit_coe"
                 render = {props => 
                   <EditCoe {...props}
+                    role={this.state.role}
+                  />
+                }
+              />
+
+              <Route 
+                path="/add_customer"
+                render={props => 
+                  <AddCustomer {...props} 
                     role={this.state.role}
                   />
                 }

@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import SearchForm from '../SearchForm';
 
 export default class Employee extends Component {
   componentDidMount = () => {
@@ -8,8 +9,8 @@ export default class Employee extends Component {
 
   render() {
     return (
-      <div>
-        
+      <div className="container">
+        <SearchForm />
       </div>
     )
   }

@@ -10,8 +10,13 @@ export default function Navbar(props) {
   const logout = props.role !== 0 ? (<Link to="/" onClick={ handleClick }>Logout</Link>) : (<span></span>);
 
   const navs = () => {
-    if (props.role === 1) {
-      return <Link to="/edit_coe">Edit</Link>
+    switch (props.role) {
+      case 1:
+        return <Link to="/edit_coe">Edit</Link>;
+      case 2:
+        return <Link to="/add_customer">Add New Customer</Link>
+      default:
+        return <span></span>
     }
   }
 

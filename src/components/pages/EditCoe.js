@@ -6,7 +6,8 @@ export default class EditCoe extends Component {
   state = {
     coe: 0,
     min_sal: [0, 0, 0, 0, 0],
-    max_sal: [0, 0, 0, 0, 0]
+    max_sal: [0, 0, 0, 0, 0],
+    count_load: 5
   }
 
   componentDidMount = () => {
@@ -66,7 +67,63 @@ export default class EditCoe extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
+
+    this.setState({
+      count_load: 0
+    })
+
+    const coe = parseFloat(this.state.coe);
+    const max_sal = this.state.max_sal.map(val => parseFloat(val));
+    const min_sal = this.state.min_sal.map(val => parseFloat(val));
+
+    if (isNaN(coe)) {
+      alert('Invalid coefficient');
+      return 0;
+    }
     
+    for (let i = 1; i <= 4; i++) {
+      if (isNaN(max_sal[i])) {
+        alert(`Invalid maximum salary of area ${i}`);
+        return 0;
+      }
+
+      if (isNaN(min_sal[i])) {
+        alert(`Invalid minimum salary of area ${i}`);
+        return 0;
+      }
+
+      if (max_sal[i] <= min_sal[i]) {
+        alert(`Maximum salary have to greater than minimum salary in area ${i}`);
+        return 0;
+      }
+    }
+
+    const coefficient = {
+      id: 1,
+      coe
+    }
+
+    for (let i = 1; i <= 4; i++) {
+      Axios.put(`${cf.host_name}/areas/update`, {
+        id: i,
+        min_sal: min_sal[i],
+        max_sal: max_sal[i]
+      }).then(res => {
+        const {count_load} = this.state;
+        this.setState({count_load: count_load + 1});
+      }).catch(err => {
+        console.log(err);
+      })
+    }
+    
+    Axios.put(`${cf.host_name}/coefficients/update`, coefficient).then(res => {
+      const {count_load} = this.state;
+      this.setState({count_load: count_load + 1});
+    }).catch(err => {
+      console.log(err);
+    });
+
+    alert('edited');
   }
 
   componentWillMount = (e) => {
@@ -221,6 +278,7 @@ export default class EditCoe extends Component {
                 type="text" 
                 id="area_4_max_salary"
                 name="area_4_max_salary"
+                disabled={this.state.count_load < 5}
                 value={ this.state.max_sal[4] }
                 onChange={ this.handleSalaryChange }
               />
@@ -233,45 +291,3 @@ export default class EditCoe extends Component {
     )
   }
 }
-
-const validFloat = (num) => {
-  let count_dot = 0;
-  for (let i = 0; i < num.length; i++){
-    if (num.charAt(i) === '.') {
-      if (count_dot === 1) return false;
-      count_dot ++;
-      continue;
-    }
-    if (isNaN(parseFloat(num.charAt(i)))) return false;
-  }
-  return true;
-}
-
-const valid_coe = (coe) => {
-  if (validFloat(coe)) {
-    const coe_num = parseFloat(coe);
-    console.log(coe_num);
-    if (coe_num >= 0.0 && coe_num <= 1.0) return true;
-  }
-  return false;
-}
-
-const valid_area_salary = (sal) => {
-  if (validFloat(sal)) {
-    const sal_num = parseFloat(sal);
-    if (sal_num >= 0.0) return true;
-  }
-  return false;
-}
-
-const valid_area_salaries = (min_sal, max_sal) => {
-  for (let i = 1; i <= 4; i++){
-    if (! valid_area_salary(toString(max_sal[i])) 
-      || ! valid_area_salary(toString(min_sal[i]))) return false;
-    
-    if (parseFloat(min_sal[i]) > parseFloat(max_sal[i])) return false;
-  }
-  return true;
-}
-
-
