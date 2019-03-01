@@ -16,11 +16,20 @@ export default class UserInfo extends Component {
 
   componentDidMount = () => {
     let id = parseInt(this.props.match.params.id);
-    if ((this.props.role === 3 && id !== this.props.id) ||
-      this.props.role === 0) this.props.history.push('/');
+
+    
+    if (id) {
+      if (this.props.role === 3 && id !== this.props.id) {
+        id = this.props.id;        
+      }
+    } else {
+      id = this.props.id;
+    }
+
+    if (this.props.role === 0) this.props.history.push('/');
     else {
-      if (this.props.role === 3) id = this.props.id;
       Axios.get(`${cf.host_name}/users/${id}`).then(res => {
+        console.log(res);
         if (res.data) {
           this.setState({
             user: res.data
@@ -64,9 +73,13 @@ export default class UserInfo extends Component {
   }
 
   deleteUser = (e) => {
-    if (alert('Are you sure to delete this user')) {
-      console.log('motherfucker')
-    }
+    Axios.delete(`${cf.host_name}/users/delete/${this.state.user.id}`).then(res => {
+      alert('Deleted user');
+      this.props.history.push('/');
+    }).catch(err => {
+      alert('This user was already deleted');
+      this.props.history.push('/');
+    });
   }
 
   render() {
@@ -89,7 +102,7 @@ export default class UserInfo extends Component {
     const display_buttons = this.props.role === 1 ? (
       <div>
         <Link to={`/edit_user/${user.id}`} type="button" className="btn btn-primary">Edit</Link>
-        <button onClick={this.deleteUser} type="button" className="btn btn-danger">Delete</button>
+        <button type="button" className="btn btn-danger"  data-toggle="modal" data-target="#myModal">Delete</button>
       </div>      
     ) : (<span></span>);
 
@@ -162,6 +175,25 @@ export default class UserInfo extends Component {
           </div>
         </div>
         {display_buttons}
+
+        <div id="myModal" className="modal fade" role="dialog">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <button type="button" className="close" data-dismiss="modal">&times;</button>
+                <h4 className="modal-title">Alert</h4>
+              </div>
+              <div className="modal-body">
+                <p>Are you sure to delete this user</p>
+              </div>
+              <div className="modal-footer">
+                <button onClick={this.deleteUser} type="button" className="btn btn-primary" data-dismiss="modal">Sure vl</button>
+                <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
       </div>
     )
   }

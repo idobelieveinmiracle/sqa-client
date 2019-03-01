@@ -15,14 +15,14 @@ export default class AddCustomer extends Component {
     province: "",
     district: "",
     town: "",
-    area: 0,
+    area: 1,
     is_vol: false,
     career: "",
     is_free: false,
     free_detail: "",
-    main_sal: 0,
-    position_allowrance: 0,
-    res_allowrance: 0,
+    main_sal: "",
+    position_allowrance: "",
+    res_allowrance: "",
     provinces_list: [],
     districts_list: [],
     towns_list: []
@@ -220,7 +220,33 @@ export default class AddCustomer extends Component {
     console.log(user);
 
     Axios.post(`${cf.host_name}/users/register`, user).then(res => {
-      console.log(res);
+      if (res.status === 201) {
+        alert('Created user');
+        this.setState({
+          username: "",
+          password: "",
+          re_password: "",
+          full_name: "",
+          id_person: "",
+          is_male: true,
+          date_of_birth: "",
+          phone: "",
+          province: "",
+          district: "",
+          town: "",
+          area: 1,
+          is_vol: false,
+          career: "",
+          is_free: false,
+          free_detail: "",
+          main_sal: "",
+          position_allowrance: "",
+          res_allowrance: "",
+          provinces_list: [],
+          districts_list: [],
+          towns_list: []
+        });
+      } else alert('Username was taken, please use other username')
     }).catch(err => console.log(err));
     
   }
@@ -237,6 +263,7 @@ export default class AddCustomer extends Component {
               className="form-control" 
               id="username" 
               name="username" 
+              value={this.state.username}
               onChange={ this.handleChange }
             />
           </div>
@@ -248,6 +275,7 @@ export default class AddCustomer extends Component {
               className="form-control" 
               id="password" 
               name="password" 
+              value={this.state.password}
               onChange={ this.handleChange }
             />
           </div>
@@ -259,6 +287,7 @@ export default class AddCustomer extends Component {
               className="form-control" 
               id="re_password" 
               name="re_password" 
+              value={this.state.re_password}
               onChange={ this.handleChange }
             />
           </div>
@@ -270,6 +299,7 @@ export default class AddCustomer extends Component {
               className="form-control" 
               id="full_name" 
               name="full_name" 
+              value={this.state.full_name}
               onChange={ this.handleChange }
             />
           </div>   
@@ -281,6 +311,7 @@ export default class AddCustomer extends Component {
               className="form-control" 
               id="id_person" 
               name="id_person" 
+              value={this.state.id_person}
               onChange={ this.handleChange }
             />
           </div>  
@@ -305,6 +336,7 @@ export default class AddCustomer extends Component {
               className="form-control" 
               id="date_of_birth" 
               name="date_of_birth" 
+              value={this.state.date_of_birth}
               onChange={ this.handleChange }
             />
           </div>    
@@ -316,6 +348,7 @@ export default class AddCustomer extends Component {
               className="form-control" 
               id="phone" 
               name="phone" 
+              value={this.state.phone}
               onChange={ this.handleChange }
             />
           </div>  
@@ -327,6 +360,7 @@ export default class AddCustomer extends Component {
               className="form-control" 
               id="province" 
               name="province" 
+              value={this.state.province}
               onChange={ this.handleChange }
             />
           </div>  
@@ -338,6 +372,7 @@ export default class AddCustomer extends Component {
               className="form-control" 
               id="district" 
               name="district" 
+              value={this.state.district}
               onChange={ this.handleChange }
             />
           </div>  
@@ -349,6 +384,7 @@ export default class AddCustomer extends Component {
               className="form-control" 
               id="town" 
               name="town" 
+              value={this.state.town}
               onChange={ this.handleChange }
             />
           </div>  
@@ -388,6 +424,7 @@ export default class AddCustomer extends Component {
               className="form-control" 
               id="career" 
               name="career" 
+              value={this.state.career}
               onChange={ this.handleChange }
             />
           </div>  
@@ -428,6 +465,7 @@ export default class AddCustomer extends Component {
               className="form-control" 
               id="main_sal" 
               name="main_sal" 
+              value={this.state.main_sal}
               onChange={ this.handleChange }
             />
           </div> 
@@ -439,6 +477,7 @@ export default class AddCustomer extends Component {
               className="form-control" 
               id="position_allowrance" 
               name="position_allowrance" 
+              value={this.state.position_allowrance}
               onChange={ this.handleChange }
             />
           </div> 
@@ -450,6 +489,7 @@ export default class AddCustomer extends Component {
               className="form-control" 
               id="res_allowrance" 
               name="res_allowrance" 
+              value={this.state.res_allowrance}
               onChange={ this.handleChange }
             />
           </div> 

@@ -16,7 +16,8 @@ class App extends Component {
     id: 0,
     username: "",
     password: "",
-    role: 0
+    role: 0,
+    done: false
   }
 
   componentDidMount = () => {
@@ -36,7 +37,9 @@ class App extends Component {
           role: res.data.role_id,
           id: res.data.id
         })
-      } 
+      }
+
+      this.setState({done: true});
     })
   }
 
