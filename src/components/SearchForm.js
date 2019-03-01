@@ -11,6 +11,12 @@ export default class SearchForm extends Component {
     });
   }
 
+  handleSubmit = (e) => {
+    e.preventDefault();
+
+    this.props.searchUser(this.state.keyword);
+  }
+
   render() {
     return (
       <div className="container">
@@ -19,7 +25,7 @@ export default class SearchForm extends Component {
           <div className="input-group">
             <input type="text" 
               className="form-control"
-              placeholder="Search customer by name or id here ...."
+              placeholder="Search customer by id here ...."
               name="keyword"
               onChange={ this.handleChange }
             />

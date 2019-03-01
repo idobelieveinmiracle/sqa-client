@@ -1,4 +1,6 @@
 import React, { Component } from 'react'
+import Axios from 'axios';
+import cf from "../../Config";
 
 export default class AddCustomer extends Component {
   state = {
@@ -18,13 +20,18 @@ export default class AddCustomer extends Component {
     career: "",
     is_free: false,
     free_detail: "",
-    main_salary: 0,
+    main_sal: 0,
     position_allowrance: 0,
-    res_allowrance: 0
+    res_allowrance: 0,
+    provinces_list: [],
+    districts_list: [],
+    towns_list: []
   }
 
   componentDidMount = () => {
     if (this.props.role !== 2) this.props.history.push('/');
+
+    
   }
 
   handleChange = (e) => {
@@ -59,7 +66,7 @@ export default class AddCustomer extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
 
-    const {username, password, full_name} = this.state;
+    const {username, password, re_password, full_name, id_person} = this.state;
 
     if (username.length > 30 || username.length < 8) {
       alert('Invalid username, username have to contain greater than 7 characters and lesser than 31 characters');
@@ -93,6 +100,11 @@ export default class AddCustomer extends Component {
       return 0;
     }
 
+    if (re_password !== password) {
+      alert('Invalid repeat password');
+      return 0;
+    }
+
     if (full_name.charAt(0) < 'A' || full_name.charAt(0) > 'Z') {
       alert('Invalid full name');
       return false;
@@ -100,7 +112,7 @@ export default class AddCustomer extends Component {
 
     let count = 0;
 
-    for (let i = 0; i < full_name.length; i++) {
+    for (let i = 1; i < full_name.length; i++) {
       const x = full_name.charAt(i);
       if (x === ' ') {
         count++;
@@ -122,6 +134,94 @@ export default class AddCustomer extends Component {
       return 0;
     }
 
+    if (id_person.length !== 12) {
+      alert('Your Id must have 12 digitals');
+      return 0;
+    }
+
+    for (let i = 0; i < 12; i++) {
+      if (id_person.charAt(i) < '0' || id_person.charAt(i) > '9') {
+        alert('Your ID must have 12 digitals');
+        return 0;
+      }
+    }
+
+    const {phone} = this.state;
+
+    if (phone.length !== 10 || phone.charAt(0) !== '0' || phone.charAt(1) !== '9') {
+      alert('Phone number must have 10 digitals and start by "09"');
+      return 0;
+    }
+
+    const {main_sal} = this.state;
+
+    if (!isNaN(parseFloat(main_sal))) {
+      if (parseFloat(main_sal) <= 0) {
+        alert('Main salary must greater than 0');
+        return 0;
+      }
+    } else {
+      alert('Invalid salary input');
+      return 0;
+    }
+
+    const {position_allowrance} = this.state;
+
+    if (!isNaN(parseFloat(position_allowrance))) {
+      if (parseFloat(position_allowrance) <= 0) {
+        alert('Position allowrance must greater than 0');
+        return 0;
+      }
+    } else {
+      alert('Invalid position allowrance input');
+      return 0;
+    }
+    
+    const {res_allowrance} = this.state;
+
+    if (!isNaN(parseFloat(res_allowrance))) {
+      if (parseFloat(res_allowrance) <= 0) {
+        alert('Responsibility allowrance must greater than 0');
+        return 0;
+      }
+    } else {
+      alert('Invalid responsibility allowrance input');
+      return 0;
+    }
+
+    const user = {
+      full_name: this.state.full_name,
+      id_person: this.state.id_person,
+      date_of_birth: this.state.date_of_birth,
+      sex: this.state.is_male,
+      is_vol: this.state.is_vol,
+      carrer: this.state.career,
+      free: this.state.is_free,
+      free_detail: this.state.is_free ? this.state.free_detail : "",
+      phone: this.state.phone,
+      role_id: 3,
+      area_id: parseInt(this.state.area),
+      addressDTO: {
+        province: this.state.province,
+        district: this.state.district,
+        town: this.state.town
+      },
+      accountDTO: {
+        username: this.state.username,
+        password: this.state.password
+      },
+      salaryDTO: {
+        main_sal: parseFloat(this.state.main_sal),
+        position_allowrance: parseFloat(this.state.position_allowrance),
+        res_allowrance: parseFloat(this.state.res_allowrance)
+      }      
+    }
+
+    console.log(user);
+
+    Axios.post(`${cf.host_name}/users/register`, user).then(res => {
+      console.log(res);
+    }).catch(err => console.log(err));
     
   }
 
@@ -360,3 +460,5 @@ export default class AddCustomer extends Component {
     )
   }
 }
+
+// const location_url = 'https://thongtindoanhnghiep.co/api';

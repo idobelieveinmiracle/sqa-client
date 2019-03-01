@@ -5,17 +5,39 @@ import './App.css';
 import Navbar from './components/layouts/Navbar';
 import LoginForm from './components/pages/LoginForm';
 import Employee from "./components/pages/Employee";
-import CustomerInfo from "./components/pages/CustomerInfo";
-import Admin from './components/pages/Admin';
 import Axios from 'axios';
 import EditCoe from './components/pages/EditCoe';
 import AddCustomer from './components/pages/AddCustomer';
+import UserInfo from "./components/pages/UserInfo";
+import EditUser from './components/pages/EditUser';
 
 class App extends Component {
   state = {
+    id: 0,
     username: "",
     password: "",
-    role: 2, //if role == 0, user did not login
+    role: 0
+  }
+
+  componentDidMount = () => {
+    const {cookies} = this.props;
+    const user = {
+      username: cookies.cookies.username,
+      password: cookies.cookies.password
+    }
+
+    Axios.post(`${hostname}/login`, user).then(res => {
+      if (res.data) {
+        this.props.cookies.set('username', user.username);
+        this.props.cookies.set('password', user.password);
+        this.setState({
+          username: user.username,
+          password: user.password,
+          role: res.data.role_id,
+          id: res.data.id
+        })
+      } 
+    })
   }
 
   login = (username, password) => {
@@ -30,17 +52,22 @@ class App extends Component {
     console.log(url);
 
     Axios.post(url, account).then(res => {
-      if (res) {
+      if (res.data) {
         this.props.cookies.set('username', username);
         this.props.cookies.set('password', password);
         this.setState({
           username,
           password,
-          role: res.data.role_id
+          role: res.data.role_id,
+          id: res.data.id
         })
-      } else alert("Login failed");
+      } else {
+        alert("Login failed");
+        this.logout();
+      }
     }).catch(err => {
-      alert("Login failed")
+      alert("Login failed");
+      this.logout();
     });
   }
 
@@ -51,13 +78,11 @@ class App extends Component {
     this.setState({
       username: "",
       password: "",
-      role: 0
+      role: 0,
+      id: 0
     });
+    window.location.reload();
   }
-
-  add_customer = (customer_info) => {
-
-  } 
 
   render() {
     return (
@@ -93,6 +118,25 @@ class App extends Component {
                   />
                 }
               />
+
+              <Route 
+                path="/user_info/:id"
+                render={props => 
+                  <UserInfo {...props}
+                    role={this.state.role}
+                  />
+                }
+              />
+
+              <Route 
+                path="/edit_user/:id"
+                render={props =>
+                  <EditUser {...props}
+                    role={this.state.role}
+                    id={this.state.id}
+                  />
+                }
+              />
               
               <Route path="/" 
                 render={props => {
@@ -103,7 +147,7 @@ class App extends Component {
                         login={this.login}
                       />
                     case 1:
-                      return <Admin {...props}
+                      return <Employee {...props}
                         role={this.state.role}
                       />
                     case 2:
@@ -112,7 +156,8 @@ class App extends Component {
                         username={this.state.username}
                       />
                     case 3:
-                      return <CustomerInfo {...props}
+                      return <UserInfo {...props}
+                        id={this.state.id}
                         role={this.state.role}
                       />
                     default:
