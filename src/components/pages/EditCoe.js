@@ -6,15 +6,16 @@ export default class EditCoe extends Component {
   state = {
     coe: 0,
     min_sal: [0, 0, 0, 0, 0],
-    max_sal: [0, 0, 0, 0, 0],
-    count_load: 5
+    max_sal: [0, 0, 0, 0, 0]
   }
 
   componentDidMount = () => {
+    // check role
     if (this.props.role !== 1) this.props.history.push("/");
   }
 
   handleChange = (e) => {
+    // handle change
     this.setState({
       [e.target.name]: e.target.value
     });
@@ -23,6 +24,8 @@ export default class EditCoe extends Component {
   handleSalaryChange = (e) => {
     let min_sal = this.state.min_sal;
     let max_sal = this.state.max_sal;
+
+    // get data from form
     switch (e.target.name) {
       case "area_1_min_salary":        
         min_sal[1] = e.target.value;
@@ -63,24 +66,22 @@ export default class EditCoe extends Component {
       min_sal,
       max_sal
     })
-  }
+  } // handleSalaryChange
 
   handleSubmit = (e) => {
     e.preventDefault();
-
-    this.setState({
-      count_load: 0
-    })
 
     const coe = parseFloat(this.state.coe);
     const max_sal = this.state.max_sal.map(val => parseFloat(val));
     const min_sal = this.state.min_sal.map(val => parseFloat(val));
 
+    // validate coe
     if (isNaN(coe)) {
       alert('Invalid coefficient');
       return 0;
     }
     
+    // validate salary values
     for (let i = 1; i <= 4; i++) {
       if (isNaN(max_sal[i])) {
         alert(`Invalid maximum salary of area ${i}`);
@@ -98,35 +99,33 @@ export default class EditCoe extends Component {
       }
     }
 
-    const coefficient = {
-      id: 1,
-      coe
-    }
-
+    // send min max salary values request
     for (let i = 1; i <= 4; i++) {
       Axios.put(`${cf.host_name}/areas/update`, {
         id: i,
         min_sal: min_sal[i],
         max_sal: max_sal[i]
       }).then(res => {
-        const {count_load} = this.state;
-        this.setState({count_load: count_load + 1});
+
       }).catch(err => {
         console.log(err);
       })
     }
     
-    Axios.put(`${cf.host_name}/coefficients/update`, coefficient).then(res => {
-      const {count_load} = this.state;
-      this.setState({count_load: count_load + 1});
+    // send coefficient value request
+    Axios.put(`${cf.host_name}/coefficients/update`, {
+      id: 1,
+      coe
+    }).then(res => {
+      alert('edited');
     }).catch(err => {
       console.log(err);
     });
-
-    alert('edited');
   }
 
+  // init data
   componentWillMount = (e) => {
+    // get coe
     Axios.get(`${cf.host_name}/coefficients`).then(res => {
       if (res.data[0]) {
         this.setState({
@@ -141,6 +140,7 @@ export default class EditCoe extends Component {
       });
     });
 
+    // get salary values
     Axios.get(`${cf.host_name}/areas`).then(res => {
       const areas = res.data;
 

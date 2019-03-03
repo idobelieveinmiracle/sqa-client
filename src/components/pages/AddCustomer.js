@@ -29,12 +29,12 @@ export default class AddCustomer extends Component {
   }
 
   componentDidMount = () => {
+    // check role
     if (this.props.role !== 2) this.props.history.push('/');
-
-    
   }
 
   handleChange = (e) => {
+    // handle is_vol change
     if (e.target.name === "is_vol") {
       this.setState({
         is_vol: e.target.value === "Voluntary"
@@ -42,6 +42,7 @@ export default class AddCustomer extends Component {
       return 0;
     }
 
+    //handle is_free change
     if (e.target.name === "is_free") {
       this.setState({
         is_free: e.target.value === "Yes"
@@ -50,6 +51,7 @@ export default class AddCustomer extends Component {
       return 0;
     }
 
+    // handle is_male change
     if (e.target.name === "is_male") {
       this.setState({
         is_male: e.target.value === "Male"
@@ -58,6 +60,7 @@ export default class AddCustomer extends Component {
       return 0;
     }
 
+    // handle other field change
     this.setState({
       [e.target.name]: e.target.value
     });
@@ -66,8 +69,11 @@ export default class AddCustomer extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
 
-    const {username, password, re_password, full_name, id_person} = this.state;
+    // init validating variable
+    const {username, password, re_password, full_name, id_person, res_allowrance, position_allowrance,
+      main_sal, phone} = this.state;
 
+    // validate data to send request
     if (username.length > 30 || username.length < 8) {
       alert('Invalid username, username have to contain greater than 7 characters and lesser than 31 characters');
       return 0;
@@ -146,8 +152,6 @@ export default class AddCustomer extends Component {
       }
     }
 
-    const {phone} = this.state;
-
     if (phone.length !== 10 || phone.charAt(0) !== '0' || phone.charAt(1) !== '9') {
       alert('Phone number must have 10 digitals and start by "09"');
       return 0;
@@ -165,8 +169,6 @@ export default class AddCustomer extends Component {
       return 0;
     }
 
-    const {position_allowrance} = this.state;
-
     if (!isNaN(parseFloat(position_allowrance))) {
       if (parseFloat(position_allowrance) <= 0) {
         alert('Position allowrance must greater than 0');
@@ -176,8 +178,6 @@ export default class AddCustomer extends Component {
       alert('Invalid position allowrance input');
       return 0;
     }
-    
-    const {res_allowrance} = this.state;
 
     if (!isNaN(parseFloat(res_allowrance))) {
       if (parseFloat(res_allowrance) <= 0) {
@@ -189,6 +189,7 @@ export default class AddCustomer extends Component {
       return 0;
     }
 
+    // init data to send request
     const user = {
       full_name: this.state.full_name,
       id_person: this.state.id_person,
@@ -217,8 +218,10 @@ export default class AddCustomer extends Component {
       }      
     }
 
-    console.log(user);
+    // print out data to check
+    // console.log(user);
 
+    // send
     Axios.post(`${cf.host_name}/users/register`, user).then(res => {
       if (res.status === 201) {
         alert('Created user');
@@ -249,7 +252,7 @@ export default class AddCustomer extends Component {
       } else alert('Username was taken, please use other username')
     }).catch(err => console.log(err));
     
-  }
+  } // handingSubmit
 
   render() {
     return (
@@ -500,5 +503,3 @@ export default class AddCustomer extends Component {
     )
   }
 }
-
-// const location_url = 'https://thongtindoanhnghiep.co/api';
