@@ -15,9 +15,10 @@ export default class UserInfo extends Component {
   }
 
   componentDidMount = () => {
+    // get id from params
     let id = parseInt(this.props.match.params.id);
-
     
+    // check role
     if (id) {
       if (this.props.role === 3 && id !== this.props.id) {
         id = this.props.id;        
@@ -27,20 +28,21 @@ export default class UserInfo extends Component {
     }
 
     if (this.props.role === 0) this.props.history.push('/');
-    else {
+    else { // if role is valid, get user information from server 
       Axios.get(`${cf.host_name}/users/${id}`).then(res => {
-        console.log(res);
-        if (res.data) {
+        if (res.data) { // if user with the id in params is found, set state to display info
           this.setState({
             user: res.data
           });
   
+          // get coe
           Axios.get(`${cf.host_name}/coefficients/1`).then(r => {
             this.setState({
               coe: r.data.coe
             });
           });
   
+          // get max salary and min salary
           Axios.get(`${cf.host_name}/areas/${res.data.area_id}`).then(r => {
             this.setState({
               max_sal: r.data.max_sal,
@@ -48,23 +50,12 @@ export default class UserInfo extends Component {
             });
           });
   
-        } else {
-          this.setState({
-            err: true
-          });
-  
-          alert('There is no user has id of '+id);
-  
-          this.props.history.push('/');
-  
+        } else { // if can not find any user have id at params
+          alert('There is no user has id of '+id);  
+          this.props.history.push('/');  
         }
-      }).catch(err => {
-        this.setState({
-          err: true
-        });
-  
-        alert('There is no user has id of '+id);
-  
+      }).catch(err => {  
+        alert('There is no user has id of '+id);  
         this.props.history.push('/');
       });
     }

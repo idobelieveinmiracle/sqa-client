@@ -4,7 +4,7 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import './App.css';
 import Navbar from './components/layouts/Navbar';
 import LoginForm from './components/pages/LoginForm';
-import Employee from "./components/pages/Employee";
+import ListUsers from "./components/pages/ListUsers";
 import Axios from 'axios';
 import EditCoe from './components/pages/EditCoe';
 import AddCustomer from './components/pages/AddCustomer';
@@ -150,11 +150,11 @@ class App extends Component {
                         login={this.login}
                       />
                     case 1:
-                      return <Employee {...props}
+                      return <ListUsers {...props}
                         role={this.state.role}
                       />
                     case 2:
-                      return <Employee {...props}
+                      return <ListUsers {...props}
                         role={this.state.role}
                         username={this.state.username}
                       />
@@ -172,9 +172,6 @@ class App extends Component {
                   }                  
                 }
               />
-
-              
-
             </Switch>
           </div>
         </div>

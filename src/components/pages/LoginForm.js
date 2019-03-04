@@ -6,6 +6,11 @@ export default class LoginForm extends Component {
     password: ""
   }
 
+  componentDidMount = () => {
+    // check role
+    if (this.props.role !== 0) this.props.history.push('/');
+  }
+
   handleChange = (e) => {
     this.setState({
       [e.target.name]: e.target.value
@@ -14,12 +19,8 @@ export default class LoginForm extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    this.props.login(this.state.username, this.state.password);
+    this.props.login(this.state.username, this.state.password); // call login function from props
     this.props.history.push('/');
-  }
-
-  componentDidMount = () => {
-    if (this.props.role !== 0) this.props.history.push('/');
   }
 
   render() {

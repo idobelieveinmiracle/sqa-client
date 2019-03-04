@@ -4,15 +4,16 @@ import Axios from 'axios';
 import cf from "../../Config";
 import { Link } from "react-router-dom";
 
-export default class Employee extends Component {
+export default class ListUsers extends Component {
   state = {
     list_user: []
   }
 
   componentDidMount = () => {
-    const role = this.props.role;
-    if (role !== 2) this.props.history.push('/');
+    // check role
+    if (this.props.role !== 2) this.props.history.push('/');
 
+    // get list users
     Axios.get(`${cf.host_name}/users`).then(res => {
       if (res.data) {
         this.setState({
@@ -22,9 +23,9 @@ export default class Employee extends Component {
     });
   }
 
+  // handling search user function
   searchUser = (keyword) => {
-    if (keyword) {
-      console.log(keyword);
+    if (keyword) { // get user with keyword
       Axios.get(`${cf.host_name}/users/${keyword}`).then(res => {
         if (res.data) {
           this.setState({
@@ -34,7 +35,7 @@ export default class Employee extends Component {
       }).catch(err => {
         alert('Can not find any user has id of '+keyword);
       })
-    } else {
+    } else { // get all users if not thing is imported
       Axios.get(`${cf.host_name}/users`).then(res => {
         if (res.data) {
           this.setState({

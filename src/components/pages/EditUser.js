@@ -3,6 +3,7 @@ import cf from "../../Config";
 import Axios from 'axios';
 
 export default class EditUser extends Component {
+  // init state
   state = {
     id: 0,
     username: "",
@@ -30,10 +31,12 @@ export default class EditUser extends Component {
   }
 
   componentDidMount = () => {
-    if (this.props.role !== 1) this.props.history.push('/');
+    if (this.props.role !== 1) this.props.history.push('/'); // check role
     else {
+      // get id in params url
       const id = this.props.match.params.id;
 
+      // get user information by id from server
       Axios.get(`${cf.host_name}/users/${id}`).then(res => {
         if(res.data) {
           const user = res.data;
@@ -61,12 +64,11 @@ export default class EditUser extends Component {
         alert('can not connect');
         this.props.history.push('/');
       });
-    }
-
-    
+    }    
   }
 
   handleChange = (e) => {
+    // handle is_vol change
     if (e.target.name === "is_vol") {
       this.setState({
         is_vol: e.target.value === "Voluntary"
@@ -74,22 +76,23 @@ export default class EditUser extends Component {
       return 0;
     }
 
+    // handle is_free change
     if (e.target.name === "is_free") {
       this.setState({
         is_free: e.target.value === "Yes"
       });
-
       return 0;
     }
 
+    // handle is_male change
     if (e.target.name === "is_male") {
       this.setState({
         is_male: e.target.value === "Male"
       });
-
       return 0;
     }
 
+    // handle other field change
     this.setState({
       [e.target.name]: e.target.value
     });
@@ -98,7 +101,8 @@ export default class EditUser extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
 
-    const {username, password, re_password, full_name, id_person} = this.state;
+    const {username, password, re_password, full_name, id_person, 
+      phone, res_allowrance, position_allowrance, main_sal} = this.state;
 
     if (username.length > 30 || username.length < 8) {
       alert('Invalid username, username have to contain greater than 7 characters and lesser than 31 characters');
@@ -178,14 +182,10 @@ export default class EditUser extends Component {
       }
     }
 
-    const {phone} = this.state;
-
     if (phone.length !== 10 || phone.charAt(0) !== '0' || phone.charAt(1) !== '9') {
       alert('Phone number must have 10 digitals and start by "09"');
       return 0;
     }
-
-    const {main_sal} = this.state;
 
     if (!isNaN(parseFloat(main_sal))) {
       if (parseFloat(main_sal) <= 0) {
@@ -197,8 +197,6 @@ export default class EditUser extends Component {
       return 0;
     }
 
-    const {position_allowrance} = this.state;
-
     if (!isNaN(parseFloat(position_allowrance))) {
       if (parseFloat(position_allowrance) <= 0) {
         alert('Position allowrance must greater than 0');
@@ -208,8 +206,6 @@ export default class EditUser extends Component {
       alert('Invalid position allowrance input');
       return 0;
     }
-    
-    const {res_allowrance} = this.state;
 
     if (!isNaN(parseFloat(res_allowrance))) {
       if (parseFloat(res_allowrance) <= 0) {
@@ -221,15 +217,16 @@ export default class EditUser extends Component {
       return 0;
     }
 
+    // set data user to send request
     const user = {
       id: this.state.id,
       full_name: this.state.full_name,
       id_person: this.state.id_person,
       date_of_birth: this.state.date_of_birth,
-      sex: this.state.is_male,
+      is_male: this.state.is_male,
       is_vol: this.state.is_vol,
-      carrer: this.state.career,
-      free: this.state.is_free,
+      career: this.state.career,
+      is_free: this.state.is_free,
       free_detail: this.state.is_free ? this.state.free_detail : "",
       phone: this.state.phone,
       role_id: 3,
@@ -250,8 +247,9 @@ export default class EditUser extends Component {
       }      
     }
 
-    console.log(user);
+    // console.log(user);
 
+    // send update request
     Axios.patch(`${cf.host_name}/users/update`, user).then(res => {
       alert('Edited');
     }).catch(err => {
@@ -259,6 +257,7 @@ export default class EditUser extends Component {
     })
   }
 
+  // render interface
   render() {
     return (
       <div className="container">

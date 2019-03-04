@@ -157,8 +157,6 @@ export default class AddCustomer extends Component {
       return 0;
     }
 
-    const {main_sal} = this.state;
-
     if (!isNaN(parseFloat(main_sal))) {
       if (parseFloat(main_sal) <= 0) {
         alert('Main salary must greater than 0');
@@ -194,10 +192,10 @@ export default class AddCustomer extends Component {
       full_name: this.state.full_name,
       id_person: this.state.id_person,
       date_of_birth: this.state.date_of_birth,
-      sex: this.state.is_male,
+      is_male: this.state.is_male,
       is_vol: this.state.is_vol,
-      carrer: this.state.career,
-      free: this.state.is_free,
+      career: this.state.career,
+      is_free: this.state.is_free,
       free_detail: this.state.is_free ? this.state.free_detail : "",
       phone: this.state.phone,
       role_id: 3,
