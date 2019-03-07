@@ -26,10 +26,10 @@ export default class LoginForm extends Component {
   render() {
     return (
       <div className="container">
-        <h1 style={ {textAlign: "center"} }>Login</h1>
+        <h1 style={ {textAlign: "center"} }>Đăng nhập</h1>
         <form onSubmit={ this.handleSubmit }>
           <div className="form-group">
-            <label htmlFor="username">Username:</label>
+            <label htmlFor="username">Tên dăng nhập:</label>
             <input 
               type="text" 
               className="form-control" 
@@ -40,7 +40,7 @@ export default class LoginForm extends Component {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="password">Password:</label>
+            <label htmlFor="password">Mật khẩu:</label>
             <input 
               type="password" 
               className="form-control" 
@@ -50,7 +50,7 @@ export default class LoginForm extends Component {
               onChange={ this.handleChange }
             />
           </div>
-          <button type="submit" className="btn btn-default">Login</button>
+          <button type="submit" className="btn btn-default">Đăng nhập</button>
         </form>
       </div>
     )

@@ -65,11 +65,11 @@ class App extends Component {
           id: res.data.id
         })
       } else {
-        alert("Login failed");
+        alert("Đăng nhập thất bại");
         this.logout();
       }
     }).catch(err => {
-      alert("Login failed");
+      alert("Đăng nhập thất bại");
       this.logout();
     });
   }
@@ -91,8 +91,8 @@ class App extends Component {
     return (
       <BrowserRouter>
         <div className="App">
-          <Navbar role={ this.state.role } logout={ this.logout }/>
-          <div className="container" style={{marginTop: "50px"}}>
+          <Navbar role={ this.state.role } logout={ this.logout } id={ this.state.id }/>
+          <div className="container" style={{marginTop: "50px", marginBottom: "50px"}}>
             <Switch>
               <Route 
                 path="/login"

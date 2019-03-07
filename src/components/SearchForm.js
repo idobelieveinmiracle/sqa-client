@@ -20,12 +20,12 @@ export default class SearchForm extends Component {
   render() {
     return (
       <div className="container">
-        <h3>Search</h3>
+        <h3>Tìm kiếm</h3>
         <form onSubmit={ this.handleSubmit }>
           <div className="input-group">
             <input type="text" 
               className="form-control"
-              placeholder="Search customer by id here ...."
+              placeholder="Tìm kiếm thông tin tài khoản khách hàng theo id ở đây ...."
               name="keyword"
               onChange={ this.handleChange }
             />

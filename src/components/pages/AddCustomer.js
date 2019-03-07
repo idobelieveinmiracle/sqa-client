@@ -6,7 +6,7 @@ export default class AddCustomer extends Component {
   state = {
     username: "",
     password: "",
-    re_password: "",
+    re_password: "",  
     full_name: "",
     id_person: "",
     is_male: true,
@@ -37,7 +37,7 @@ export default class AddCustomer extends Component {
     // handle is_vol change
     if (e.target.name === "is_vol") {
       this.setState({
-        is_vol: e.target.value === "Voluntary"
+        is_vol: e.target.value === "Tự nguyện"
       });
       return 0;
     }
@@ -45,7 +45,7 @@ export default class AddCustomer extends Component {
     //handle is_free change
     if (e.target.name === "is_free") {
       this.setState({
-        is_free: e.target.value === "Yes"
+        is_free: e.target.value === "Có"
       });
 
       return 0;
@@ -54,7 +54,7 @@ export default class AddCustomer extends Component {
     // handle is_male change
     if (e.target.name === "is_male") {
       this.setState({
-        is_male: e.target.value === "Male"
+        is_male: e.target.value === "Nam"
       });
 
       return 0;
@@ -75,7 +75,7 @@ export default class AddCustomer extends Component {
 
     // validate data to send request
     if (username.length > 30 || username.length < 8) {
-      alert('Invalid username, username have to contain greater than 7 characters and lesser than 31 characters');
+      alert('Tên đăng nhập không hợp lệ, tên đăng nhập phải chứa ít nhất 8 ký tự và nhiểu nhất 30 ký tự');
       return 0;
     }
 
@@ -86,12 +86,12 @@ export default class AddCustomer extends Component {
         username.charAt(i) === '_' || username.charAt(i) === '.'
       ) continue;
 
-      alert('Invalid username, username have to only contain English characters, digitals, "_" and "."')
+      alert('Tên đăng nhập không hợp lệ, tên đăng nhập chỉ được chứa chữ, số hoặc các ký tự "_" hoặc "."')
       return 0;
     }
 
-    if (username.length > 30 || username.length < 8) {
-      alert('Invalid username, username have to contain greater than 7 characters and lesser than 31 characters');
+    if (password.length > 30 || password.length < 8) {
+      alert('Mật khẩu không hợp lệ, mật khẩu phải chứa ít nhất 8 ký tự và nhiểu nhất 30 ký tự');
       return 0;
     }
 
@@ -102,17 +102,17 @@ export default class AddCustomer extends Component {
         password.charAt(i) === '_' || password.charAt(i) === '.'
       ) continue;
 
-      alert('Invalid password, password have to only contain English characters, digitals, "_" and "."')
+      alert('Mật khẩu không hợp lệ, mật khẩu chỉ được chứa chữ, số hoặc các ký tự "_" hoặc "."')
       return 0;
     }
 
     if (re_password !== password) {
-      alert('Invalid repeat password');
+      alert('Nhập lại mật khẩu không đúng');
       return 0;
     }
 
     if (full_name.charAt(0) < 'A' || full_name.charAt(0) > 'Z') {
-      alert('Invalid full name');
+      alert('Họ và tên không hợp lệ');
       return false;
     }
 
@@ -131,73 +131,68 @@ export default class AddCustomer extends Component {
 
       if (x >= 'a' && x <= 'z') continue;
 
-      alert('Invalid full name');
+      alert('Họ và tên không hợp lệ');
       return 0;
     }
 
     if (count > 6) {
-      alert('Your name is so long, it does not make sense');
+      alert('Tên của bạn nhập dài quá -.-');
       return 0;
     }
 
     if (id_person.length !== 12) {
-      alert('Your Id must have 12 digitals');
+      alert('Số chứng minh nhân dân phải có 12 ký tự số');
       return 0;
     }
 
     for (let i = 0; i < 12; i++) {
       if (id_person.charAt(i) < '0' || id_person.charAt(i) > '9') {
-        alert('Your ID must have 12 digitals');
+        alert('Số chứng minh nhân dân phải có 12 ký tự số');
         return 0;
       }
     }
 
     if (phone.length !== 10 || phone.charAt(0) !== '0' || phone.charAt(1) !== '9') {
-      alert('Phone number must have 10 digitals and start by "09"');
+      alert('Số điện thoại phải bao gồm 10 ký tự số và bắt đầu bởi "09"');
       return 0;
     }
 
     if (!isNaN(parseFloat(main_sal))) {
       if (parseFloat(main_sal) <= 0) {
-        alert('Main salary must greater than 0');
+        alert('Lương chính phải là số lớn hơn hoặc bằng 0');
         return 0;
       }
     } else {
-      alert('Invalid salary input');
+      alert('Nhập sai lương chính');
       return 0;
     }
 
     if (!isNaN(parseFloat(position_allowrance))) {
       if (parseFloat(position_allowrance) <= 0) {
-        alert('Position allowrance must greater than 0');
+        alert('Phụ cấp chức vụ phải lớn hơn hoặc bằng 0');
         return 0;
       }
     } else {
-      alert('Invalid position allowrance input');
+      alert('Nhập sai phụ cấp chức vụ');
       return 0;
     }
 
     if (!isNaN(parseFloat(res_allowrance))) {
       if (parseFloat(res_allowrance) <= 0) {
-        alert('Responsibility allowrance must greater than 0');
+        alert('Phụ cấp chức vụ phải lớn hơn hoặc bằng 0');
         return 0;
       }
     } else {
-      alert('Invalid responsibility allowrance input');
+      alert('Nhập sai phụ cấp trách nhiệm');
       return 0;
     }
 
+    const send_user = this.state;
+
     // init data to send request
     const user = {
-      full_name: this.state.full_name,
-      id_person: this.state.id_person,
-      date_of_birth: this.state.date_of_birth,
-      is_male: this.state.is_male,
-      is_vol: this.state.is_vol,
-      career: this.state.career,
-      is_free: this.state.is_free,
+      ...send_user,
       free_detail: this.state.is_free ? this.state.free_detail : "",
-      phone: this.state.phone,
       role_id: 3,
       area_id: parseInt(this.state.area),
       addressDTO: {
@@ -215,9 +210,6 @@ export default class AddCustomer extends Component {
         res_allowrance: parseFloat(this.state.res_allowrance)
       }      
     }
-
-    // print out data to check
-    // console.log(user);
 
     // send
     Axios.post(`${cf.host_name}/users/register`, user).then(res => {
@@ -247,7 +239,7 @@ export default class AddCustomer extends Component {
           districts_list: [],
           towns_list: []
         });
-      } else alert('Username was taken, please use other username')
+      } else alert('Tên đăng nhập này đã được đăng ký, vui lòng lập lại tên đăng nhập')
     }).catch(err => console.log(err));
     
   } // handingSubmit
@@ -255,10 +247,10 @@ export default class AddCustomer extends Component {
   render() {
     return (
       <div className="container">
-        <h1 style={ {textAlign: "center"} }>Register</h1>
+        <h1 style={ {textAlign: "center"} }>Đăng ký</h1>
         <form onSubmit={ this.handleSubmit }>
           <div className="form-group">
-            <label htmlFor="username">Username:</label>
+            <label htmlFor="username">Tên đăng nhập:</label>
             <input 
               type="text" 
               className="form-control" 
@@ -270,7 +262,7 @@ export default class AddCustomer extends Component {
           </div>
           
           <div className="form-group">
-            <label htmlFor="password">Password:</label>
+            <label htmlFor="password">Mật khẩu:</label>
             <input 
               type="text" 
               className="form-control" 
@@ -282,7 +274,7 @@ export default class AddCustomer extends Component {
           </div>
 
           <div className="form-group">
-            <label htmlFor="re_password">Repeat your password:</label>
+            <label htmlFor="re_password">Nhập lại mật khẩu:</label>
             <input 
               type="text" 
               className="form-control" 
@@ -294,7 +286,7 @@ export default class AddCustomer extends Component {
           </div>
           
           <div className="form-group">
-            <label htmlFor="full_name">Full name:</label>
+            <label htmlFor="full_name">Tên đầy đủ:</label>
             <input 
               type="text" 
               className="form-control" 
@@ -306,7 +298,7 @@ export default class AddCustomer extends Component {
           </div>   
 
           <div className="form-group">
-            <label htmlFor="id_person">Person Id:</label>
+            <label htmlFor="id_person">Số chứng minh nhân dân:</label>
             <input 
               type="text" 
               className="form-control" 
@@ -318,20 +310,20 @@ export default class AddCustomer extends Component {
           </div>  
 
           <div className="form-group">
-            <label htmlFor="is_male">Gender:</label>
+            <label htmlFor="is_male">Giới tính:</label>
             <select 
               className="form-control" 
               id="is_male" 
               name="is_male" 
               onChange={this.handleChange}
             >
-              <option>Male</option>
-              <option>Female</option>
+              <option>Nam</option>
+              <option>Nữ</option>
             </select>
           </div>
            
           <div className="form-group">
-            <label htmlFor="date_of_birth">Date of birth:</label>
+            <label htmlFor="date_of_birth">Ngày sinh:</label>
             <input 
               type="date" 
               className="form-control" 
@@ -343,7 +335,7 @@ export default class AddCustomer extends Component {
           </div>    
 
           <div className="form-group">
-            <label htmlFor="phone">Phone number:</label>
+            <label htmlFor="phone">Số điện thoại:</label>
             <input 
               type="text" 
               className="form-control" 
@@ -355,7 +347,7 @@ export default class AddCustomer extends Component {
           </div>  
 
           <div className="form-group">
-            <label htmlFor="province">Province:</label>
+            <label htmlFor="province">Tỉnh/Thành phố:</label>
             <input 
               type="text" 
               className="form-control" 
@@ -367,7 +359,7 @@ export default class AddCustomer extends Component {
           </div>  
 
           <div className="form-group">
-            <label htmlFor="district">District:</label>
+            <label htmlFor="district">Quận/Huyện:</label>
             <input 
               type="text" 
               className="form-control" 
@@ -379,7 +371,7 @@ export default class AddCustomer extends Component {
           </div>  
 
           <div className="form-group">
-            <label htmlFor="town">Town or Street:</label>
+            <label htmlFor="town">Xã/Phường/Thị trấn:</label>
             <input 
               type="text" 
               className="form-control" 
@@ -391,7 +383,7 @@ export default class AddCustomer extends Component {
           </div>  
 
           <div className="form-group">
-            <label htmlFor="area">Area:</label>
+            <label htmlFor="area">Vùng lương tối thiểu:</label>
             <select 
               className="form-control" 
               id="area" 
@@ -406,20 +398,20 @@ export default class AddCustomer extends Component {
           </div>
 
           <div className="form-group">
-            <label htmlFor="is_vol">Participation type:</label>
+            <label htmlFor="is_vol">Hình thức tham gia bảo hiểm:</label>
             <select 
               className="form-control" 
               id="is_vol" 
               name="is_vol" 
               onChange={this.handleChange}
             >
-              <option>Obligatory</option>
-              <option>Voluntary</option>
+              <option>Bắt buộc</option>
+              <option>Tự nguyện</option>
             </select>
           </div>
 
           <div className="form-group">
-            <label htmlFor="career">Career:</label>
+            <label htmlFor="career">Nghề nghiệp:</label>
             <input 
               type="text" 
               className="form-control" 
@@ -431,20 +423,20 @@ export default class AddCustomer extends Component {
           </div>  
 
           <div className="form-group">
-            <label htmlFor="is_free">Free:</label>
+            <label htmlFor="is_free">Miễn giảm:</label>
             <select 
               className="form-control" 
               id="is_free" 
               name="is_free" 
               onChange={this.handleChange}
             >
-              <option>No</option>
-              <option>Yes</option>
+              <option>Không</option>
+              <option>Có</option>
             </select>
           </div>
 
           <div className="form-group">
-            <label htmlFor="free_detail">Free Detail:</label>
+            <label htmlFor="free_detail">Chi tiết miễn giảm:</label>
             <select 
               className="form-control" 
               id="free_detail" 
@@ -452,15 +444,15 @@ export default class AddCustomer extends Component {
               disabled={ ! this.state.is_free }
               onChange={this.handleChange}
             >
-              <option>Receiving pension</option>
-              <option>Receiving incapability labor subsidize</option>
-              <option>Military, Police</option>
-              <option>Town manager</option>
+              <option>Đang nhận lương hưu</option>
+              <option>Cán bộ xã/phường/thị trấn</option>
+              <option>Quân nhân, công an</option>
+              <option>Đang hưởng trợ cấp do mất sức lao động</option>
             </select>
           </div>
 
           <div className="form-group">
-            <label htmlFor="main_sal">Main salary:</label>
+            <label htmlFor="main_sal">Lương chính:</label>
             <input 
               type="text" 
               className="form-control" 
@@ -472,7 +464,7 @@ export default class AddCustomer extends Component {
           </div> 
 
           <div className="form-group">
-            <label htmlFor="position_allowrance">Position allowrance:</label>
+            <label htmlFor="position_allowrance">Phụ cấp chức vụ:</label>
             <input 
               type="text" 
               className="form-control" 
@@ -484,7 +476,7 @@ export default class AddCustomer extends Component {
           </div> 
 
           <div className="form-group">
-            <label htmlFor="res_allowrance">Responsibility allowrance:</label>
+            <label htmlFor="res_allowrance">Phụ cấp trách nhiệm:</label>
             <input 
               type="text" 
               className="form-control" 
@@ -495,7 +487,7 @@ export default class AddCustomer extends Component {
             />
           </div> 
 
-          <button type="submit" className="btn btn-default">Submit</button>
+          <button type="submit" className="btn btn-default">Đăng ký</button>
         </form>
       </div>
     )

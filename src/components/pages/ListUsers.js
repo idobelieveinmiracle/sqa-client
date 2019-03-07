@@ -17,7 +17,7 @@ export default class ListUsers extends Component {
     Axios.get(`${cf.host_name}/users`).then(res => {
       if (res.data) {
         this.setState({
-          list_user: res.data
+          list_user: res.data.filter(user => user.role_id !== 1)
         });
       }
     });
@@ -31,9 +31,9 @@ export default class ListUsers extends Component {
           this.setState({
             list_user: [res.data]
           });
-        } else alert('Can not find any user has id of '+keyword);
+        } else alert('Không thể tìm thấy tài khoản có mã là '+keyword);
       }).catch(err => {
-        alert('Can not find any user has id of '+keyword);
+        alert('Không thể tìm thấy tài khoản có mã là '+keyword);
       })
     } else { // get all users if not thing is imported
       Axios.get(`${cf.host_name}/users`).then(res => {
@@ -54,23 +54,23 @@ export default class ListUsers extends Component {
         <td>{user.full_name}</td>
         <td>{user.date_of_birth}</td>
         <td>{user.addressDTO.province}</td>
-        <td><Link to={`/user_info/${user.id}`}>view</Link></td>
+        <td><Link to={`/user_info/${user.id}`}>Chi tiết</Link></td>
       </tr>
     ));
     return (
       <div className="container">
         <SearchForm searchUser={this.searchUser} />
         <div className="container">
-          <h3>List users</h3>
+          <h3>Danh sách khách hàng</h3>
           <table className="table"> 
             <thead>
               <tr>
                 <th>Id</th>
-                <th>Identify number</th>
-                <th>Full name</th>
-                <th>Birth</th>
-                <th>Province</th>
-                <th>Link</th>
+                <th>Số chứng minh nhân dân</th>
+                <th>Họ và tên</th>
+                <th>Ngày sinh</th>
+                <th>Tỉnh</th>
+                <th>Xem</th>
               </tr>
             </thead>
             <tbody>

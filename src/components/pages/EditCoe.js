@@ -77,24 +77,24 @@ export default class EditCoe extends Component {
 
     // validate coe
     if (isNaN(coe)) {
-      alert('Invalid coefficient');
+      alert('Nhận không đúng hệ số lương');
       return 0;
     }
     
     // validate salary values
     for (let i = 1; i <= 4; i++) {
       if (isNaN(max_sal[i])) {
-        alert(`Invalid maximum salary of area ${i}`);
+        alert(`Nhập sai lương tối đa của vùng ${i}`);
         return 0;
       }
 
       if (isNaN(min_sal[i])) {
-        alert(`Invalid minimum salary of area ${i}`);
+        alert(`Nhập sai lương tối thiểu của vùng ${i}`);
         return 0;
       }
 
       if (max_sal[i] <= min_sal[i]) {
-        alert(`Maximum salary have to greater than minimum salary in area ${i}`);
+        alert(`Lương tối đa phải lớn hơn hoặc bằng lương tối thiểu ${i}`);
         return 0;
       }
     }
@@ -117,8 +117,9 @@ export default class EditCoe extends Component {
       id: 1,
       coe
     }).then(res => {
-      alert('edited');
+      alert('Sửa thành công');
     }).catch(err => {
+      alert('Lỗi, xem lại đường truyền, hoặc server bị lỗi, react của Hùng không liên quan =))');
       console.log(err);
     });
   }
@@ -162,10 +163,10 @@ export default class EditCoe extends Component {
   render() {
     return (
       <div className="container">
-        <h1 style={ {textAlign: "center"} }>Edit Coefficient</h1>
+        <h1 style={ {textAlign: "center"} }>Thay đổi hệ số bảo hiểm xã hội - mức lương</h1>
         <form onSubmit={ this.handleSubmit }>
           <div className="form-group">
-            <label htmlFor="coe">Coefficient:</label>
+            <label htmlFor="coe">Hệ số bảo hiểm xã hội:</label>
             <input 
               type="text" 
               className="form-control" 
@@ -176,10 +177,10 @@ export default class EditCoe extends Component {
             />
           </div>
 
-          <label htmlFor="area_1">Area 1</label>
+          <label htmlFor="area_1">Vùng 1</label>
           <div className="form-group row">            
             <div className="col-xs-6">
-              <label htmlFor="area_1_min_salary">Minimum Salary:</label>
+              <label htmlFor="area_1_min_salary">Lương tối thiểu:</label>
               <input 
                 className="form-control" 
                 type="text" 
@@ -191,7 +192,7 @@ export default class EditCoe extends Component {
             </div>
 
             <div className="col-xs-6">
-              <label htmlFor="area_1_max_salary">Maximum Salary:</label>
+              <label htmlFor="area_1_max_salary">Lương tối đa:</label>
               <input 
                 className="form-control" 
                 type="text" 
@@ -203,10 +204,10 @@ export default class EditCoe extends Component {
             </div>
           </div>
 
-          <label htmlFor="area_2">Area 2</label>
+          <label htmlFor="area_2">Vùng 2</label>
           <div className="form-group row">            
             <div className="col-xs-6">
-              <label htmlFor="area_2_min_salary">Minimum Salary:</label>
+              <label htmlFor="area_2_min_salary">Lương tối thiểu:</label>
               <input 
                 className="form-control" 
                 type="text" 
@@ -218,7 +219,7 @@ export default class EditCoe extends Component {
             </div>
 
             <div className="col-xs-6">
-              <label htmlFor="area_2_max_salary">Maximum Salary:</label>
+              <label htmlFor="area_2_max_salary">Lương tối đa:</label>
               <input 
                 className="form-control" 
                 type="text" 
@@ -230,10 +231,10 @@ export default class EditCoe extends Component {
             </div>
           </div>
 
-          <label htmlFor="area_3">Area 3</label>
+          <label htmlFor="area_3">Vùng 3</label>
           <div className="form-group row">            
             <div className="col-xs-6">
-              <label htmlFor="area_3_min_salary">Minimum Salary:</label>
+              <label htmlFor="area_3_min_salary">Lương tối thiểu:</label>
               <input 
                 className="form-control" 
                 type="text" 
@@ -245,7 +246,7 @@ export default class EditCoe extends Component {
             </div>
 
             <div className="col-xs-6">
-              <label htmlFor="area_3_max_salary">Maximum Salary:</label>
+              <label htmlFor="area_3_max_salary">Lương tối đa:</label>
               <input 
                 className="form-control" 
                 type="text" 
@@ -257,10 +258,10 @@ export default class EditCoe extends Component {
             </div>
           </div>
 
-          <label htmlFor="area_4">Area 4</label>
+          <label htmlFor="area_4">Vùng 4</label>
           <div className="form-group row">            
             <div className="col-xs-6">
-              <label htmlFor="area_4_min_salary">Minimum Salary:</label>
+              <label htmlFor="area_4_min_salary">Lương tối thiểu:</label>
               <input 
                 className="form-control" 
                 type="text" 
@@ -272,7 +273,7 @@ export default class EditCoe extends Component {
             </div>
 
             <div className="col-xs-6">
-              <label htmlFor="area_4_max_salary">Maximum Salary:</label>
+              <label htmlFor="area_4_max_salary">Lương tối đa:</label>
               <input 
                 className="form-control" 
                 type="text" 
@@ -285,7 +286,7 @@ export default class EditCoe extends Component {
             </div>
           </div>
 
-          <button type="submit" className="btn btn-default">Save</button>
+          <button type="submit" className="btn btn-default">Lưu</button>
         </form>
       </div>
     )
