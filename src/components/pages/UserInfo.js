@@ -41,9 +41,11 @@ export default class UserInfo extends Component {
               coe: r.data.coe
             });
           });
+
+          console.log(res.data.addressDTO.district.areaDTO.id);
   
           // get max salary and min salary
-          Axios.get(`${cf.host_name}/areas/${res.data.area_id}`).then(r => {
+          Axios.get(`${cf.host_name}/areas/${res.data.addressDTO.district.areaDTO.id}`).then(r => {
             this.setState({
               max_sal: r.data.max_sal,
               min_sal: r.data.min_sal
@@ -126,7 +128,7 @@ export default class UserInfo extends Component {
           </div>
           <div className="row">
             <p className="col-sm-2"><strong>Giới tính:</strong></p>
-            <p className="col-sm-10">{ user.sex ? "Nam" : "Nữ" }</p>
+            <p className="col-sm-10">{ user.is_male ? "Nam" : "Nữ" }</p>
           </div>
           <div className="row">
             <p className="col-sm-2"><strong>Nghề nghiệp:</strong></p>
@@ -134,7 +136,7 @@ export default class UserInfo extends Component {
           </div>
           <div className="row">
             <p className="col-sm-2"><strong>Địa chỉ:</strong></p>
-            <p className="col-sm-10">{ `${user.addressDTO.town} - ${user.addressDTO.district} - ${user.addressDTO.province}` }</p>
+            <p className="col-sm-10">{ `${user.addressDTO.town.name} - ${user.addressDTO.district.name} - ${user.addressDTO.province.name}` }</p>
           </div>
           <div className="row">
             <p className="col-sm-2"><strong>Hình thức tham gia:</strong></p>
@@ -142,12 +144,12 @@ export default class UserInfo extends Component {
           </div>
           <div className="row">
             <p className="col-sm-2"><strong>Miễn giảm:</strong></p>
-            <p className="col-sm-10">{ user.free ? "Có" : "Không" }</p>
+            <p className="col-sm-10">{ user.is_free ? "Có" : "Không" }</p>
           </div>
           { free_detail }    
           <div className="row">
             <p className="col-sm-2"><strong>Vùng lương tối thiểu:</strong></p>
-            <p className="col-sm-10">{ "Vùng "+user.area_id }</p>
+            <p className="col-sm-10">{ "Vùng "+user.addressDTO.district.areaDTO.id }</p>
           </div>      
           <div className="row">
             <p className="col-sm-2"><strong>Lương chính:</strong></p>
@@ -162,9 +164,9 @@ export default class UserInfo extends Component {
             <p className="col-sm-10">{ user.salaryDTO.res_allowrance + " VNĐ" }</p>
           </div>
                  
-          <div className="row">
+          <div style={{color: "red"}} className="row">
             <p className="col-sm-2"><strong>Tiền bảo hiểm phải đóng:</strong></p>
-            <p className="col-sm-10">{ insurrance(user, this.state.coe, this.state.min_sal, this.state.max_sal) + " VNĐ" }</p>
+            <p style={{fontSize:"25px"}} className="col-sm-10">{ insurrance(user, this.state.coe, this.state.min_sal, this.state.max_sal) + " VNĐ" }</p>
           </div>
         </div>
         {display_buttons}
@@ -197,7 +199,7 @@ const insurrance = (user, coe, min_sal, max_sal) => {
   
   const total_salary = user.salaryDTO.main_sal + user.salaryDTO.position_allowrance 
     + user.salaryDTO.res_allowrance;
-
+  console.log(total_salary, " ", min_sal);
   if (user.is_vol) {
     if (total_salary < min_sal) {
       return parseInt(0.18 * min_sal);

@@ -7,17 +7,15 @@ export default class EditUser extends Component {
   state = {
     id: 0,
     username: "",
-    password: "",
-    re_password: "",
     full_name: "",
     id_person: "",
     is_male: true,
     date_of_birth: "",
     phone: "",
-    province: "",
-    district: "",
-    town: "",
-    area: 1,
+    province: "00",
+    district: "00",
+    town: "00",
+    area: "Chưa chọn",
     is_vol: false,
     career: "",
     is_free: false,
@@ -42,22 +40,56 @@ export default class EditUser extends Component {
           const user = res.data;
           if (user.id !== id) {
             this.props.history.push('/')
-          } else this.setState({
+          } else {
+            this.setState({
               ...user,
               username: user.accountDTO.username,
-              password: user.accountDTO.password,
-              re_password: user.accountDTO.password,
-              province: user.addressDTO.province,
-              district: user.addressDTO.district,
-              town: user.addressDTO.town,
               main_sal: user.salaryDTO.main_sal,
+              area: user.addressDTO.district.areaDTO.id,
               position_allowrance: user.salaryDTO.position_allowrance,
               res_allowrance: user.salaryDTO.res_allowrance
             });
 
+            Axios.get(`${cf.host_name}/location/province`).then(r => {
+              if (r.data) {
+                console.log(user.addressDTO.province.matp);
+                this.setState({
+                  provinces_list: r.data,
+                  province: user.addressDTO.province.matp
+                })
+              } else {
+                alert("Không thể kết nối đến server");
+              }
+            }).catch(() => {
+              alert("Không thể kết nối đến server");
+            });
+
+            Axios.get(`${cf.host_name}/location/province/${user.addressDTO.province.matp}`).then(r => {
+              if (r.data) {
+                console.log(r.data);
+                this.setState({
+                  districts_list: r.data.quanHuyenDTOs,
+                  district: user.addressDTO.district.maqh
+                });
+              }
+            });
+
+            Axios.get(`${cf.host_name}/location/district/${user.addressDTO.district.maqh}`).then(r => {
+              if (r.data) {
+                console.log(r.data);
+                this.setState({
+                  towns_list: r.data.xaPhuongThiTranDTOs,
+                  area: `Vùng ${r.data.areaDTO.id}`,
+                  town: user.addressDTO.town.xaid
+                });
+              }
+            });
+
+          }
+
           console.log(this.state.is_vol);
         } else {
-          alert('không thể tìn được tài khoản với id là '+id);
+          alert('không thể tìm được tài khoản với id là '+id);
           this.props.history.push('/');
         }
       }).catch(err => {
@@ -68,6 +100,55 @@ export default class EditUser extends Component {
   }
 
   handleChange = (e) => {
+    if (e.target.name === "province"){
+      // console.log(e.target.value);
+      const val = e.target.value;
+      if (val !== "00") {
+        Axios.get(`${cf.host_name}/location/province/${val}`).then(res => {
+          if (res.data) {
+            console.log(res.data);
+            this.setState({
+              districts_list: res.data.quanHuyenDTOs,
+              district: "00",
+              towns_list: [],
+              town: "00",
+              area: "Chưa chọn"
+            });
+          }
+        })
+      } else {
+        this.setState({
+          districts_list: [],
+          district: "00",
+          towns_list: [],
+          town: "00",
+          area: "Chưa chọn"
+        })
+      }
+    }
+
+    if (e.target.name === "district") {
+      const val = e.target.value;
+      if (val !== "00") {
+        Axios.get(`${cf.host_name}/location/district/${val}`).then(res => {
+          if (res.data) {
+            console.log(res.data);
+            this.setState({
+              towns_list: res.data.xaPhuongThiTranDTOs,
+              area: `Vùng ${res.data.areaDTO.id}`,
+              town: "00"
+            });
+          }
+        })
+      } else {
+        this.setState({
+          towns_list: [],
+          area: "Chưa chọn",
+          town: "00"
+        });
+      }
+    }
+
     // handle is_vol change
     if (e.target.name === "is_vol") {
       this.setState({
@@ -101,61 +182,18 @@ export default class EditUser extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
 
-    const {username, password, re_password, full_name, id_person, 
+    const {full_name, id_person, province, district, town, date_of_birth,
       phone, res_allowrance, position_allowrance, main_sal} = this.state;
 
-    if (username.length > 30 || username.length < 8) {
-      alert('Tên đăng nhập không hợp lệ, tên đăng nhập phải chứa ít nhất 8 ký tự và nhiểu nhất 30 ký tự');
-      return 0;
-    }
-
-    for (let i = 0; i < username.length; i++) {
-      if ((username.charAt(i) >= 'a' && username.charAt(i) <= 'z') ||
-        (username.charAt(i) >= 'A' && username.charAt(i) <= 'Z') ||
-        (username.charAt(i) >= '0' && username.charAt(i) <= '9') ||
-        username.charAt(i) === '_' || username.charAt(i) === '.'
-      ) continue;
-
-      alert('Tên đăng nhập không hợp lệ, tên đăng nhập chỉ được chứa chữ, số hoặc các ký tự "_" hoặc "."')
-      return 0;
-    }
-
-    if (password.length > 30 || password.length < 8) {
-      alert('Mật khẩu không hợp lệ, mật khẩu phải chứa ít nhất 8 ký tự và nhiểu nhất 30 ký tự');
-      return 0;
-    }
-
-    for (let i = 0; i < password.length; i++) {
-      if ((password.charAt(i) >= 'a' && password.charAt(i) <= 'z') ||
-        (password.charAt(i) >= 'A' && password.charAt(i) <= 'Z') ||
-        (password.charAt(i) >= '0' && password.charAt(i) <= '9') ||
-        password.charAt(i) === '_' || password.charAt(i) === '.'
-      ) continue;
-
-      alert('Mật khẩu không hợp lệ, mật khẩu chỉ được chứa chữ, số hoặc các ký tự "_" hoặc "."')
-      return 0;
-    }
-
-    if (re_password !== password) {
-      alert('Nhập lại mật khẩu không đúng');
-      return 0;
-    }
-
-    if (full_name.charAt(0) < 'A' || full_name.charAt(0) > 'Z') {
-      alert('Họ và tên không hợp lệ');
-      return false;
-    }
+    const full_name_test = change_alias(full_name);
+    console.log(full_name_test);
 
     let count = 0;
 
-    for (let i = 1; i < full_name.length; i++) {
-      const x = full_name.charAt(i);
+    for (let i = 1; i < full_name_test.length; i++) {
+      const x = full_name_test.charAt(i);
       if (x === ' ') {
         count++;
-        continue;
-      }
-
-      if (full_name.charAt(i-1) === ' ' && x >= 'A' && x <= 'Z') {
         continue;
       }
 
@@ -182,14 +220,55 @@ export default class EditUser extends Component {
       }
     }
 
+    
+    const dob = new Date(date_of_birth);
+    const current_date = new Date();
+    const age = current_date.getFullYear() - dob.getFullYear();
+
+    if (age > 60 || age < 15) {
+      alert("Không nằm trong độ tuổi đóng bảo hiểm");
+      return 0;
+    };
+
+    if (age === 60 || age === 15) {
+      const month = current_date.getMonth() - dob.getMonth();
+      if (month > 0) {
+        alert("Không nằm trong độ tuổi đóng bảo hiểm");
+        return 0;
+      }
+
+      if (month === 0) {
+        const date = current_date.getDate() - dob.getDate();
+        if (date > 0) {
+          alert("Không nằm trong độ tuổi đóng bảo hiểm");
+          return 0
+        }
+      }
+    }   
+
     if (phone.length !== 10 || phone.charAt(0) !== '0' || phone.charAt(1) !== '9') {
       alert('Số điện thoại phải bao gồm 10 ký tự số và bắt đầu bởi "09"');
       return 0;
     }
 
+    if (province === "00") {
+      alert("Bạn chưa chọn tỉnh/thành");
+      return 0;
+    }
+
+    if (district === "00") {
+      alert("Bạn chưa chọn quận/huyện")
+      return 0;
+    }
+
+    if (town === "00") {
+      alert("Bạn chưa chọn xã/phường/thị trấn");
+      return 0;
+    }
+
     if (!isNaN(parseFloat(main_sal))) {
       if (parseFloat(main_sal) <= 0) {
-        alert('Lương chính phải là số lớn hơn hoặc bằng 0');
+        alert('Lương chính phải là số lớn hơn 0');
         return 0;
       }
     } else {
@@ -198,7 +277,7 @@ export default class EditUser extends Component {
     }
 
     if (!isNaN(parseFloat(position_allowrance))) {
-      if (parseFloat(position_allowrance) <= 0) {
+      if (parseFloat(position_allowrance) < 0) {
         alert('Phụ cấp chức vụ phải lớn hơn hoặc bằng 0');
         return 0;
       }
@@ -208,7 +287,7 @@ export default class EditUser extends Component {
     }
 
     if (!isNaN(parseFloat(res_allowrance))) {
-      if (parseFloat(res_allowrance) <= 0) {
+      if (parseFloat(res_allowrance) < 0) {
         alert('Phụ cấp chức vụ phải lớn hơn hoặc bằng 0');
         return 0;
       }
@@ -223,15 +302,10 @@ export default class EditUser extends Component {
     const user = {
       ...send_user,
       free_detail: this.state.is_free ? this.state.free_detail : "",
-      area_id: parseInt(this.state.area),
       addressDTO: {
-        province: this.state.province,
-        district: this.state.district,
-        town: this.state.town
-      },
-      accountDTO: {
-        username: this.state.username,
-        password: this.state.password
+        province: {matp: send_user.province},
+        district: {maqh: send_user.district},
+        town: {xaid: send_user.town}
       },
       salaryDTO: {
         main_sal: parseFloat(this.state.main_sal),
@@ -240,11 +314,11 @@ export default class EditUser extends Component {
       }      
     }
 
-    // console.log(user);
+    console.log(user.addressDTO.district);
 
     // send update request
     Axios.patch(`${cf.host_name}/users/update`, user).then(res => {
-      alert('Sửa thành công');
+      console.log(res.status);
     }).catch(err => {
       alert('Không thể sửa');
     })
@@ -252,43 +326,73 @@ export default class EditUser extends Component {
 
   // render interface
   render() {
+    const provinces_select = (
+      <div className="form-group">
+        <label htmlFor="province">Tỉnh/Thành phố:</label>
+        <select 
+          className="form-control" 
+          id="province" 
+          name="province" 
+          value={this.state.province}
+          onChange={this.handleChange}
+        >
+          <option value="00">Chưa chọn</option>
+          {
+            this.state.provinces_list.map(province => 
+              (<option value={province.matp} key={province.matp}>{province.name}</option>)
+            )
+          }
+        </select>
+      </div>
+    );
+
+    const districts_select = (
+      <div className="form-group">
+        <label htmlFor="district">Quận/Huyện:</label>
+        <select 
+          className="form-control" 
+          id="district" 
+          name="district" 
+          onChange={this.handleChange}
+          value={this.state.district}
+        >
+          <option value="00">Chưa chọn</option>
+          {
+            this.state.districts_list.map(province => 
+              (<option value={province.maqh} key={province.maqh}>{province.name}</option>)
+            )
+          }
+        </select>
+      </div>
+    );
+
+    const towns_select = (
+      <div className="form-group">
+        <label htmlFor="town">Xã/Phường/Thị trấn:</label>
+        <select 
+          className="form-control" 
+          id="town" 
+          name="town" 
+          onChange={this.handleChange}
+          value={this.state.town}
+        >
+          <option value="00">Chưa chọn</option>
+          {
+            this.state.towns_list.map(province => 
+              (<option value={province.xaid} key={province.xaid}>{province.name}</option>)
+            )
+          }
+        </select>
+      </div>
+    );
+
     return (
       <div className="container">
+        <h1 style={ {textAlign: "center"} }>Sửa thông tin cá nhân</h1>
         <form onSubmit={ this.handleSubmit }>
           <div className="form-group">
-            <label htmlFor="username">Tên đang nhập:</label>
-            <input 
-              type="text" 
-              className="form-control" 
-              id="username" 
-              name="username" 
-              value={this.state.username}
-              onChange={ this.handleChange }
-            />
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="password">Mật khẩu:</label>
-            <input 
-              type="text" 
-              className="form-control" 
-              id="password" 
-              name="password" 
-              value={this.state.password}
-              onChange={ this.handleChange }
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="re_password">Nhập lại mật khẩu:</label>
-            <input 
-              type="text" 
-              className="form-control" 
-              id="re_password" 
-              name="re_password" 
-              value={this.state.re_password}
-              onChange={ this.handleChange }
-            />
+            <label htmlFor="username">Tên đăng nhập:</label>
+            <p>{this.state.username}</p>
           </div>
           
           <div className="form-group">
@@ -352,56 +456,15 @@ export default class EditUser extends Component {
             />
           </div>  
 
-          <div className="form-group">
-            <label htmlFor="province">Tỉnh/Thành phố:</label>
-            <input 
-              type="text" 
-              className="form-control" 
-              id="province" 
-              name="province" 
-              value={this.state.province}
-              onChange={ this.handleChange }
-            />
-          </div>  
+          {provinces_select}
 
-          <div className="form-group">
-            <label htmlFor="district">Quận/Huyện:</label>
-            <input 
-              type="text" 
-              className="form-control" 
-              id="district" 
-              name="district" 
-              value={this.state.district}
-              onChange={ this.handleChange }
-            />
-          </div>  
+          {districts_select}
 
-          <div className="form-group">
-            <label htmlFor="town">Xã/Phường/Thị trấn:</label>
-            <input 
-              type="text" 
-              className="form-control" 
-              id="town" 
-              name="town" 
-              value={this.state.town}
-              onChange={ this.handleChange }
-            />
-          </div>  
+          {towns_select}
 
           <div className="form-group">
             <label htmlFor="area">Vùng lương tối thiểu:</label>
-            <select 
-              className="form-control" 
-              id="area" 
-              name="area" 
-              value={this.state.area_id}
-              onChange={this.handleChange}
-            >
-              <option>1</option>
-              <option>2</option>
-              <option>3</option>
-              <option>4</option>
-            </select>
+            <p>{this.state.area}</p>
           </div>
 
           <div className="form-group">
@@ -502,4 +565,19 @@ export default class EditUser extends Component {
       </div>
     )
   }
+}
+
+const change_alias = (alias) => {
+  var str = alias;
+  str = str.toLowerCase();
+  str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a"); 
+  str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e"); 
+  str = str.replace(/ì|í|ị|ỉ|ĩ/g,"i"); 
+  str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o"); 
+  str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u"); 
+  str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y"); 
+  str = str.replace(/đ/g,"d");
+  str = str.replace(/ + /g," ");
+  str = str.trim(); 
+  return str;
 }

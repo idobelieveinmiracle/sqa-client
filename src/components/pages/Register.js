@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import Axios from 'axios';
 import cf from "../../Config";
 
-export default class AddCustomer extends Component {
+export default class Register extends Component {
   state = {
     username: "",
     password: "",
@@ -12,10 +12,10 @@ export default class AddCustomer extends Component {
     is_male: true,
     date_of_birth: "",
     phone: "",
-    province: "",
-    district: "",
-    town: "",
-    area: 1,
+    province: "00",
+    district: "00",
+    town: "00",
+    area: "Chưa chọn",
     is_vol: false,
     career: "",
     is_free: false,
@@ -30,10 +30,67 @@ export default class AddCustomer extends Component {
 
   componentDidMount = () => {
     // check role
-    if (this.props.role !== 2) this.props.history.push('/');
+    if (this.props.role !== 0) this.props.history.push('/');
+    else {
+      Axios.get(`${cf.host_name}/location/province`).then(res => {
+        if (res.data) {
+          this.setState({
+            provinces_list: res.data
+          })
+        } else {
+          alert("Không thể kết nối đến server");
+        }
+      }).catch(() => {
+        alert("Không thể kết nối đến server");
+      })
+    }  
   }
 
   handleChange = (e) => {
+    if (e.target.name === "province"){
+      // console.log(e.target.value);
+      const val = e.target.value;
+      if (val !== "00") {
+        Axios.get(`${cf.host_name}/location/province/${val}`).then(res => {
+          if (res.data) {
+            console.log(res.data);
+            this.setState({
+              districts_list: res.data.quanHuyenDTOs,
+              district: "00"
+            });
+          }
+        })
+      } else {
+        this.setState({
+          districts_list: [],
+          district: "00",
+          area: "Chưa chọn"
+        })
+      }
+    }
+
+    if (e.target.name === "district") {
+      const val = e.target.value;
+      if (val !== "00") {
+        Axios.get(`${cf.host_name}/location/district/${val}`).then(res => {
+          if (res.data) {
+            console.log(res.data);
+            this.setState({
+              towns_list: res.data.xaPhuongThiTranDTOs,
+              area: `Vùng ${res.data.areaDTO.id}`,
+              town: "00"
+            });
+          }
+        })
+      } else {
+        this.setState({
+          towns_list: [],
+          area: "Chưa chọn",
+          town: "00"
+        });
+      }
+    }
+
     // handle is_vol change
     if (e.target.name === "is_vol") {
       this.setState({
@@ -70,8 +127,10 @@ export default class AddCustomer extends Component {
     e.preventDefault();
 
     // init validating variable
-    const {username, password, re_password, full_name, id_person, res_allowrance, position_allowrance,
-      main_sal, phone} = this.state;
+    const {username, password, re_password, full_name, id_person,
+      main_sal, phone, province, district, town, date_of_birth} = this.state;
+
+    let {res_allowrance, position_allowrance} = this.state;
 
     // validate data to send request
     if (username.length > 30 || username.length < 8) {
@@ -111,21 +170,13 @@ export default class AddCustomer extends Component {
       return 0;
     }
 
-    if (full_name.charAt(0) < 'A' || full_name.charAt(0) > 'Z') {
-      alert('Họ và tên không hợp lệ');
-      return false;
-    }
-
+    const full_name_test = change_alias(full_name);
     let count = 0;
 
-    for (let i = 1; i < full_name.length; i++) {
-      const x = full_name.charAt(i);
+    for (let i = 1; i < full_name_test.length; i++) {
+      const x = full_name_test.charAt(i);
       if (x === ' ') {
         count++;
-        continue;
-      }
-
-      if (full_name.charAt(i-1) === ' ' && x >= 'A' && x <= 'Z') {
         continue;
       }
 
@@ -151,15 +202,55 @@ export default class AddCustomer extends Component {
         return 0;
       }
     }
+    
+    const dob = new Date(date_of_birth);
+    const current_date = new Date();
+    const age = current_date.getFullYear() - dob.getFullYear();
+
+    if (age > 60 || age < 15) {
+      alert("Không nằm trong độ tuổi đóng bảo hiểm");
+      return 0;
+    };
+
+    if (age === 60 || age === 15) {
+      const month = current_date.getMonth() - dob.getMonth();
+      if (month > 0) {
+        alert("Không nằm trong độ tuổi đóng bảo hiểm");
+        return 0;
+      }
+
+      if (month === 0) {
+        const date = current_date.getDate() - dob.getDate();
+        if (date > 0) {
+          alert("Không nằm trong độ tuổi đóng bảo hiểm");
+          return 0
+        }
+      }
+    }   
 
     if (phone.length !== 10 || phone.charAt(0) !== '0' || phone.charAt(1) !== '9') {
       alert('Số điện thoại phải bao gồm 10 ký tự số và bắt đầu bởi "09"');
       return 0;
     }
 
+    if (province === "00") {
+      alert("Bạn chưa chọn tỉnh/thành");
+      return 0;
+    }
+
+    if (district === "00") {
+      alert("Bạn chưa chọn quận/huyện")
+      return 0;
+    }
+
+    if (town === "00") {
+      alert("Bạn chưa chọn xã/phường/thị trấn");
+      return 0;
+    }
+
     if (!isNaN(parseFloat(main_sal))) {
       if (parseFloat(main_sal) <= 0) {
-        alert('Lương chính phải là số lớn hơn hoặc bằng 0');
+        alert('Lương chính phải là số lớn hơn 0');
         return 0;
       }
     } else {
@@ -167,8 +258,11 @@ export default class AddCustomer extends Component {
       return 0;
     }
 
+    if (position_allowrance === "") position_allowrance = "0";
+    if (res_allowrance === "") res_allowrance = "0";
+
     if (!isNaN(parseFloat(position_allowrance))) {
-      if (parseFloat(position_allowrance) <= 0) {
+      if (parseFloat(position_allowrance) < 0) {
         alert('Phụ cấp chức vụ phải lớn hơn hoặc bằng 0');
         return 0;
       }
@@ -178,7 +272,7 @@ export default class AddCustomer extends Component {
     }
 
     if (!isNaN(parseFloat(res_allowrance))) {
-      if (parseFloat(res_allowrance) <= 0) {
+      if (parseFloat(res_allowrance) < 0) {
         alert('Phụ cấp chức vụ phải lớn hơn hoặc bằng 0');
         return 0;
       }
@@ -194,11 +288,10 @@ export default class AddCustomer extends Component {
       ...send_user,
       free_detail: this.state.is_free ? this.state.free_detail : "",
       role_id: 3,
-      area_id: parseInt(this.state.area),
       addressDTO: {
-        province: this.state.province,
-        district: this.state.district,
-        town: this.state.town
+        province: {matp: send_user.province},
+        district: {maqh: send_user.district},
+        town: {xaid: send_user.town}
       },
       accountDTO: {
         username: this.state.username,
@@ -206,45 +299,80 @@ export default class AddCustomer extends Component {
       },
       salaryDTO: {
         main_sal: parseFloat(this.state.main_sal),
-        position_allowrance: parseFloat(this.state.position_allowrance),
-        res_allowrance: parseFloat(this.state.res_allowrance)
+        position_allowrance: parseFloat(position_allowrance),
+        res_allowrance: parseFloat(res_allowrance)
       }      
     }
 
     // send
     Axios.post(`${cf.host_name}/users/register`, user).then(res => {
       if (res.status === 201) {
-        alert('Created user');
-        this.setState({
-          username: "",
-          password: "",
-          re_password: "",
-          full_name: "",
-          id_person: "",
-          is_male: true,
-          date_of_birth: "",
-          phone: "",
-          province: "",
-          district: "",
-          town: "",
-          area: 1,
-          is_vol: false,
-          career: "",
-          is_free: false,
-          free_detail: "",
-          main_sal: "",
-          position_allowrance: "",
-          res_allowrance: "",
-          provinces_list: [],
-          districts_list: [],
-          towns_list: []
-        });
+        alert("Đăng ký thành công");
+        this.props.history.push("/");
       } else alert('Tên đăng nhập này đã được đăng ký, vui lòng lập lại tên đăng nhập')
     }).catch(err => console.log(err));
     
   } // handingSubmit
 
   render() {
+    const provinces_select = (
+      <div className="form-group">
+        <label htmlFor="province">Tỉnh/Thành phố:</label>
+        <select 
+          className="form-control" 
+          id="province" 
+          name="province" 
+          onChange={this.handleChange}
+        >
+          <option value="00">Chưa chọn</option>
+          {
+            this.state.provinces_list.map(province => 
+              (<option value={province.matp} key={province.matp}>{province.name}</option>)
+            )
+          }
+        </select>
+      </div>
+    );
+
+    const districts_select = (
+      <div className="form-group">
+        <label htmlFor="district">Quận/Huyện:</label>
+        <select 
+          className="form-control" 
+          id="district" 
+          name="district" 
+          onChange={this.handleChange}
+          value={this.state.district}
+        >
+          <option value="00">Chưa chọn</option>
+          {
+            this.state.districts_list.map(province => 
+              (<option value={province.maqh} key={province.maqh}>{province.name}</option>)
+            )
+          }
+        </select>
+      </div>
+    );
+
+    const towns_select = (
+      <div className="form-group">
+        <label htmlFor="town">Xã/Phường/Thị trấn:</label>
+        <select 
+          className="form-control" 
+          id="town" 
+          name="town" 
+          onChange={this.handleChange}
+          value={this.state.town}
+        >
+          <option value="00">Chưa chọn</option>
+          {
+            this.state.towns_list.map(province => 
+              (<option value={province.xaid} key={province.xaid}>{province.name}</option>)
+            )
+          }
+        </select>
+      </div>
+    )
     return (
       <div className="container">
         <h1 style={ {textAlign: "center"} }>Đăng ký</h1>
@@ -264,7 +392,7 @@ export default class AddCustomer extends Component {
           <div className="form-group">
             <label htmlFor="password">Mật khẩu:</label>
             <input 
-              type="text" 
+              type="password" 
               className="form-control" 
               id="password" 
               name="password" 
@@ -276,7 +404,7 @@ export default class AddCustomer extends Component {
           <div className="form-group">
             <label htmlFor="re_password">Nhập lại mật khẩu:</label>
             <input 
-              type="text" 
+              type="password" 
               className="form-control" 
               id="re_password" 
               name="re_password" 
@@ -346,55 +474,15 @@ export default class AddCustomer extends Component {
             />
           </div>  
 
-          <div className="form-group">
-            <label htmlFor="province">Tỉnh/Thành phố:</label>
-            <input 
-              type="text" 
-              className="form-control" 
-              id="province" 
-              name="province" 
-              value={this.state.province}
-              onChange={ this.handleChange }
-            />
-          </div>  
+          {provinces_select}
+
+          {districts_select} 
+
+          {towns_select} 
 
           <div className="form-group">
-            <label htmlFor="district">Quận/Huyện:</label>
-            <input 
-              type="text" 
-              className="form-control" 
-              id="district" 
-              name="district" 
-              value={this.state.district}
-              onChange={ this.handleChange }
-            />
-          </div>  
-
-          <div className="form-group">
-            <label htmlFor="town">Xã/Phường/Thị trấn:</label>
-            <input 
-              type="text" 
-              className="form-control" 
-              id="town" 
-              name="town" 
-              value={this.state.town}
-              onChange={ this.handleChange }
-            />
-          </div>  
-
-          <div className="form-group">
-            <label htmlFor="area">Vùng lương tối thiểu:</label>
-            <select 
-              className="form-control" 
-              id="area" 
-              name="area" 
-              onChange={this.handleChange}
-            >
-              <option>1</option>
-              <option>2</option>
-              <option>3</option>
-              <option>4</option>
-            </select>
+            <label htmlFor="area">Vùng lương tối thiểu: </label>    
+            <p>{this.state.area}</p>        
           </div>
 
           <div className="form-group">
@@ -492,4 +580,19 @@ export default class AddCustomer extends Component {
       </div>
     )
   }
+}
+
+const change_alias = (alias) => {
+  var str = alias;
+  str = str.toLowerCase();
+  str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a"); 
+  str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e"); 
+  str = str.replace(/ì|í|ị|ỉ|ĩ/g,"i"); 
+  str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o"); 
+  str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u"); 
+  str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y"); 
+  str = str.replace(/đ/g,"d");
+  str = str.replace(/ + /g," ");
+  str = str.trim(); 
+  return str;
 }

@@ -13,12 +13,14 @@ export default function Navbar(props) {
     switch (props.role) {
       case 1:
         return <Link to="/edit_coe">Sửa hệ số</Link>;
-      case 2:
-        return <Link to="/add_customer">Thêm khách hàng</Link>
       default:
         return <span></span>
     }
   }
+
+  const my_info = props.role === 1 ? (
+    <Link to={`/user_info/${props.id}`}>Thông tin của tôi</Link>
+  ) : (<span></span>)
 
   return (
     <div>
@@ -28,7 +30,7 @@ export default function Navbar(props) {
             <Link className="navbar-brand" to="/">Trang chủ</Link>
           </div>
           <ul className="nav navbar-nav">
-            <li><Link to={`/user_info/${props.id}`}>Thông tin của tôi</Link></li>
+            <li>{my_info}</li>
             <li>{ navs() }</li>
             <li>{ logout }</li>
           </ul>

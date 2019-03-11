@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Link } from "react-router-dom";
 
 export default class LoginForm extends Component {
   state = {
@@ -19,6 +20,17 @@ export default class LoginForm extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
+    
+    if (this.state.username === "") {
+      alert("Chưa nhập tên đăng nhập");
+      return 0;
+    }
+
+    if (this.state.password === "") {
+      alert("Chưa nhập mật khẩu");
+      return 0;
+    }
+
     this.props.login(this.state.username, this.state.password); // call login function from props
     this.props.history.push('/');
   }
@@ -50,7 +62,8 @@ export default class LoginForm extends Component {
               onChange={ this.handleChange }
             />
           </div>
-          <button type="submit" className="btn btn-default">Đăng nhập</button>
+          <button type="submit" className="btn btn-default">Đăng nhập</button><br/><br/>
+          <Link to="/register" >Đăng ký</Link>
         </form>
       </div>
     )

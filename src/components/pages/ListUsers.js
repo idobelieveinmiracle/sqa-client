@@ -53,7 +53,7 @@ export default class ListUsers extends Component {
         <td>{user.id_person}</td>
         <td>{user.full_name}</td>
         <td>{user.date_of_birth}</td>
-        <td>{user.addressDTO.province}</td>
+        <td>{user.addressDTO.province.name}</td>
         <td><Link to={`/user_info/${user.id}`}>Chi tiết</Link></td>
       </tr>
     ));

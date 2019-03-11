@@ -7,7 +7,7 @@ import LoginForm from './components/pages/LoginForm';
 import ListUsers from "./components/pages/ListUsers";
 import Axios from 'axios';
 import EditCoe from './components/pages/EditCoe';
-import AddCustomer from './components/pages/AddCustomer';
+import Register from './components/pages/Register';
 import UserInfo from "./components/pages/UserInfo";
 import EditUser from './components/pages/EditUser';
 
@@ -114,9 +114,9 @@ class App extends Component {
               />
 
               <Route 
-                path="/add_customer"
+                path="/register"
                 render={props => 
-                  <AddCustomer {...props} 
+                  <Register {...props} 
                     role={this.state.role}
                   />
                 }
