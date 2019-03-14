@@ -11,7 +11,7 @@ export default class EditCoe extends Component {
 
   componentDidMount = () => {
     // check role
-    if (this.props.role !== 1 && this.props.done) this.props.history.push("/");
+    if (this.props.role !== 1) this.props.history.push("/");
   }
 
   handleChange = (e) => {

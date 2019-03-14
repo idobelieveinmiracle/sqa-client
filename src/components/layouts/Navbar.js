@@ -22,6 +22,10 @@ export default function Navbar(props) {
     <Link to={`/user_info/${props.id}`}>Thông tin của tôi</Link>
   ) : (<span></span>)
 
+  const edit_password = props.role !== 0 ? (
+    <Link to={`/edit_password`}>Đổi mật khẩu</Link>
+  ) : (<span></span>)
+
   return (
     <div>
       <nav className="navbar navbar-inverse navbar-fixed-top">
@@ -32,6 +36,7 @@ export default function Navbar(props) {
           <ul className="nav navbar-nav">
             <li>{my_info}</li>
             <li>{ navs() }</li>
+            <li>{edit_password}</li>
             <li>{ logout }</li>
           </ul>
         </div>

@@ -87,7 +87,7 @@ export default class EditUser extends Component {
 
           }
 
-          console.log(this.state.is_vol);
+          console.log(this.state);
         } else {
           alert('không thể tìm được tài khoản với id là '+id);
           this.props.history.push('/');
@@ -394,7 +394,7 @@ export default class EditUser extends Component {
         <h1 style={ {textAlign: "center"} }>Sửa thông tin cá nhân</h1>
         <form onSubmit={ this.handleSubmit }>
           <div className="form-group">
-            <label htmlFor="username">Tên đăng nhập:</label>
+            <label htmlFor="username">Tên đăng nhập/Email:</label>
             <p>{this.state.username}</p>
           </div>
           

@@ -10,12 +10,14 @@ export default class ListUsers extends Component {
   }
 
   componentDidMount = () => {
+    console.log('Mounted');
     // check role
-    if (this.props.role !== 3 && this.props.done) this.props.history.push('/');
+    if (this.props.role !== 1) this.props.history.push('/');
 
     // get list users
     else Axios.get(`${cf.host_name}/users`).then(res => {
       if (res.data) {
+        console.log(res.data);
         this.setState({
           list_user: res.data.filter(user => user.role_id !== 1)
         });

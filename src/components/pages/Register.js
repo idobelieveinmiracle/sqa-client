@@ -4,9 +4,8 @@ import cf from "../../Config";
 
 export default class Register extends Component {
   state = {
-    username: "",
-    password: "",
-    re_password: "",  
+    is_handling: false,
+    email: "",
     full_name: "",
     id_person: "",
     is_male: true,
@@ -127,48 +126,11 @@ export default class Register extends Component {
     e.preventDefault();
 
     // init validating variable
-    const {username, password, re_password, full_name, id_person,
-      main_sal, phone, province, district, town, date_of_birth} = this.state;
+    const {full_name, id_person, main_sal, phone, province,
+        district, town, date_of_birth} = this.state;
 
     let {res_allowrance, position_allowrance} = this.state;
-
-    // validate data to send request
-    if (username.length > 30 || username.length < 8) {
-      alert('Tên đăng nhập không hợp lệ, tên đăng nhập phải chứa ít nhất 8 ký tự và nhiểu nhất 30 ký tự');
-      return 0;
-    }
-
-    for (let i = 0; i < username.length; i++) {
-      if ((username.charAt(i) >= 'a' && username.charAt(i) <= 'z') ||
-        (username.charAt(i) >= 'A' && username.charAt(i) <= 'Z') ||
-        (username.charAt(i) >= '0' && username.charAt(i) <= '9') ||
-        username.charAt(i) === '_' || username.charAt(i) === '.'
-      ) continue;
-
-      alert('Tên đăng nhập không hợp lệ, tên đăng nhập chỉ được chứa chữ, số hoặc các ký tự "_" hoặc "."')
-      return 0;
-    }
-
-    if (password.length > 30 || password.length < 8) {
-      alert('Mật khẩu không hợp lệ, mật khẩu phải chứa ít nhất 8 ký tự và nhiểu nhất 30 ký tự');
-      return 0;
-    }
-
-    for (let i = 0; i < password.length; i++) {
-      if ((password.charAt(i) >= 'a' && password.charAt(i) <= 'z') ||
-        (password.charAt(i) >= 'A' && password.charAt(i) <= 'Z') ||
-        (password.charAt(i) >= '0' && password.charAt(i) <= '9') ||
-        password.charAt(i) === '_' || password.charAt(i) === '.'
-      ) continue;
-
-      alert('Mật khẩu không hợp lệ, mật khẩu chỉ được chứa chữ, số hoặc các ký tự "_" hoặc "."')
-      return 0;
-    }
-
-    if (re_password !== password) {
-      alert('Nhập lại mật khẩu không đúng');
-      return 0;
-    }
+    
 
     const full_name_test = change_alias(full_name);
     let count = 0;
@@ -304,13 +266,21 @@ export default class Register extends Component {
       }      
     }
 
+    this.setState({is_handling: true});
+
     // send
     Axios.post(`${cf.host_name}/users/register`, user).then(res => {
       if (res.status === 201) {
-        alert("Đăng ký thành công");
+        alert("Đăng ký thành công, thông tin đăng nhập và mật khẩu đã được gửi về email của bạn");
         this.props.history.push("/");
-      } else alert('Tên đăng nhập này đã được đăng ký, vui lòng lập lại tên đăng nhập')
-    }).catch(err => console.log(err));
+      } else {
+        alert('Tên đăng nhập này đã được đăng ký, vui lòng lập lại tên đăng nhập');
+        this.setState({is_handling: false});
+      }
+    }).catch(err => {
+      console.log(err);
+      this.setState({is_handling: false});
+    });
     
   } // handingSubmit
 
@@ -372,43 +342,22 @@ export default class Register extends Component {
           }
         </select>
       </div>
-    )
+    );
+
+    const display_btn_name = this.state.is_handling ? "Đang xử lý..." : "Đăng ký";
+
     return (
       <div className="container">
         <h1 style={ {textAlign: "center"} }>Đăng ký</h1>
         <form onSubmit={ this.handleSubmit }>
           <div className="form-group">
-            <label htmlFor="username">Tên đăng nhập:</label>
+            <label htmlFor="email">Email:</label>
             <input 
-              type="text" 
+              type="email" 
               className="form-control" 
-              id="username" 
-              name="username" 
-              value={this.state.username}
-              onChange={ this.handleChange }
-            />
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="password">Mật khẩu:</label>
-            <input 
-              type="password" 
-              className="form-control" 
-              id="password" 
-              name="password" 
-              value={this.state.password}
-              onChange={ this.handleChange }
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="re_password">Nhập lại mật khẩu:</label>
-            <input 
-              type="password" 
-              className="form-control" 
-              id="re_password" 
-              name="re_password" 
-              value={this.state.re_password}
+              id="email" 
+              name="email" 
+              value={this.state.email}
               onChange={ this.handleChange }
             />
           </div>
@@ -575,7 +524,7 @@ export default class Register extends Component {
             />
           </div> 
 
-          <button type="submit" className="btn btn-default">Đăng ký</button>
+          <button type="submit" className="btn btn-default" disabled={this.state.is_handling}>{display_btn_name}</button>
         </form>
       </div>
     )

@@ -10,6 +10,7 @@ import EditCoe from './components/pages/EditCoe';
 import Register from './components/pages/Register';
 import UserInfo from "./components/pages/UserInfo";
 import EditUser from './components/pages/EditUser';
+import EditPassword from './components/pages/EditPassword';
 
 class App extends Component {
   state = {
@@ -51,8 +52,6 @@ class App extends Component {
       username,
       password
     };
-
-    console.log(url);
 
     Axios.post(url, account).then(res => {
       if (res.data) {
@@ -110,6 +109,16 @@ class App extends Component {
                   <EditCoe {...props}
                     role={this.state.role}
                     done={this.state.done}
+                  />
+                }
+              />
+
+              <Route 
+                path="/edit_password"
+                render = {props => 
+                  <EditPassword {...props}
+                    role={this.state.role}
+                    id={this.state.id}
                   />
                 }
               />
