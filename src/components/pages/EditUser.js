@@ -219,7 +219,6 @@ export default class EditUser extends Component {
         return 0;
       }
     }
-
     
     const dob = new Date(date_of_birth);
     const current_date = new Date();
@@ -319,6 +318,10 @@ export default class EditUser extends Component {
     // send update request
     Axios.patch(`${cf.host_name}/users/update`, user).then(res => {
       console.log(res.status);
+      if (res.status === 200) {
+        alert("Sửa thông tin thành công");
+        this.props.history.push("/");
+      } else alert("Không thể sửa");
     }).catch(err => {
       alert('Không thể sửa');
     })

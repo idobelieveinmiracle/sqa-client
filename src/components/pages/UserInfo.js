@@ -93,11 +93,14 @@ export default class UserInfo extends Component {
         <p className="col-sm-10">{ user.free_detail }</p>
       </div>
     ) : (<span></span>);
-
+    console.log(parseInt(this.props.id) + " " + user.id );
     const display_buttons = this.props.role === 1 ? (
       <div>
         <Link to={`/edit_user/${user.id}`} type="button" className="btn btn-primary">Sửa</Link>
-        <button type="button" className="btn btn-danger"  data-toggle="modal" data-target="#myModal">Xóa</button>
+        {parseInt(this.props.match.params.id) === user.id ? (
+          <button type="button" className="btn btn-danger"  data-toggle="modal" data-target="#myModal">Xóa</button>
+        ):(<span></span>)}
+        
       </div>      
     ) : (<span></span>);
 

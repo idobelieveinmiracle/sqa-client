@@ -11,7 +11,7 @@ export default class EditCoe extends Component {
 
   componentDidMount = () => {
     // check role
-    if (this.props.role !== 1) this.props.history.push("/");
+    if (this.props.role !== 1 && this.props.done) this.props.history.push("/");
   }
 
   handleChange = (e) => {
@@ -161,6 +161,9 @@ export default class EditCoe extends Component {
   }
 
   render() {
+    if (!this.props.done) return (
+      <h1>Loading...</h1>
+    )
     return (
       <div className="container">
         <h1 style={ {textAlign: "center"} }>Thay đổi hệ số bảo hiểm xã hội - mức lương</h1>

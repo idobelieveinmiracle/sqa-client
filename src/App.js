@@ -109,6 +109,7 @@ class App extends Component {
                 render = {props => 
                   <EditCoe {...props}
                     role={this.state.role}
+                    done={this.state.done}
                   />
                 }
               />
@@ -127,6 +128,8 @@ class App extends Component {
                 render={props => 
                   <UserInfo {...props}
                     role={this.state.role}
+                    id={this.state.id}
+                    done={this.state.done}
                   />
                 }
               />
@@ -137,12 +140,13 @@ class App extends Component {
                   <EditUser {...props}
                     role={this.state.role}
                     id={this.state.id}
+                    done={this.state.done}
                   />
                 }
               />
               
               <Route path="/" 
-                render={props => {
+                render={props => {                  
                   switch (this.state.role) {
                     case 0:
                       return <LoginForm {...props}
@@ -152,11 +156,7 @@ class App extends Component {
                     case 1:
                       return <ListUsers {...props}
                         role={this.state.role}
-                      />
-                    case 2:
-                      return <ListUsers {...props}
-                        role={this.state.role}
-                        username={this.state.username}
+                        done={this.state.done}
                       />
                     case 3:
                       return <UserInfo {...props}

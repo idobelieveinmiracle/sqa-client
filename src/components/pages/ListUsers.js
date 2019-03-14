@@ -11,10 +11,10 @@ export default class ListUsers extends Component {
 
   componentDidMount = () => {
     // check role
-    if (this.props.role !== 2) this.props.history.push('/');
+    if (this.props.role !== 3 && this.props.done) this.props.history.push('/');
 
     // get list users
-    Axios.get(`${cf.host_name}/users`).then(res => {
+    else Axios.get(`${cf.host_name}/users`).then(res => {
       if (res.data) {
         this.setState({
           list_user: res.data.filter(user => user.role_id !== 1)
@@ -47,6 +47,9 @@ export default class ListUsers extends Component {
   }
 
   render() {
+    if (!this.props.done) return (
+      <h1>Loading...</h1>
+    )
     const list_user = this.state.list_user.map(user => (
       <tr key={user.id}>
         <td>{user.id}</td>
