@@ -49,9 +49,7 @@ export default class ListUsers extends Component {
   }
 
   render() {
-    if (!this.props.done) return (
-      <h1>Loading...</h1>
-    )
+    
     const list_user = this.state.list_user.map(user => (
       <tr key={user.id}>
         <td>{user.id}</td>
@@ -66,7 +64,7 @@ export default class ListUsers extends Component {
       <div className="container">
         <SearchForm searchUser={this.searchUser} />
         <div className="container">
-          <h3>Danh sách khách hàng</h3>
+          <h3 id="title">Danh sách khách hàng</h3>
           <table className="table"> 
             <thead>
               <tr>

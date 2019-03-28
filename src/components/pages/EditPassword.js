@@ -79,7 +79,7 @@ export default class EditPassword extends Component {
           </div>
 
           <div className="form-group">
-            <label htmlFor="new_pass">Mật khẩu cũ:</label>
+            <label htmlFor="new_pass">Mật khẩu mới:</label>
             <input 
               type="password" 
               className="form-control" 
@@ -91,7 +91,7 @@ export default class EditPassword extends Component {
           </div>
 
           <div className="form-group">
-            <label htmlFor="re_pass">Mật khẩu cũ:</label>
+            <label htmlFor="re_pass">Nhập lại mật khẩu mới:</label>
             <input 
               type="password" 
               className="form-control" 

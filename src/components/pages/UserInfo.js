@@ -93,20 +93,21 @@ export default class UserInfo extends Component {
         <p className="col-sm-10">{ user.free_detail }</p>
       </div>
     ) : (<span></span>);
+
     console.log(parseInt(this.props.id) + " " + user.id );
+
     const display_buttons = this.props.role === 1 ? (
-      <div>
-        <Link to={`/edit_user/${user.id}`} type="button" className="btn btn-primary">Sửa</Link>
+      <div style={{marginTop: "30px"}}>
+        <Link to={`/edit_user/${user.id}`} style={{marginRight:"20px", width:"70px"}} type="button" className="btn btn-primary">Sửa</Link>
         {parseInt(this.props.match.params.id) === user.id ? (
-          <button type="button" className="btn btn-danger"  data-toggle="modal" data-target="#myModal">Xóa</button>
-        ):(<span></span>)}
-        
+          <button type="button" className="btn btn-danger" style={{width:"70px"}}  data-toggle="modal" data-target="#myModal">Xóa</button>
+        ):(<span></span>)}        
       </div>      
     ) : (<span></span>);
 
     return (
       <div className="container">
-        <h3>Thông tin người dùng</h3>
+        <h3 id="title">Thông tin người dùng</h3>
 
         <div className="container">
           <div className="row">
@@ -169,7 +170,7 @@ export default class UserInfo extends Component {
                  
           <div style={{color: "red"}} className="row">
             <p className="col-sm-2"><strong>Tiền bảo hiểm phải đóng:</strong></p>
-            <p style={{fontSize:"25px"}} className="col-sm-10">{ insurrance(user, this.state.coe, this.state.min_sal, this.state.max_sal) + " VNĐ" }</p>
+            <p style={{fontSize:"25px"}} className="col-sm-10">{ this.state.user.insurance + " VNĐ" }</p>
           </div>
         </div>
         {display_buttons}
@@ -195,26 +196,4 @@ export default class UserInfo extends Component {
       </div>
     )
   }
-}
-
-const insurrance = (user, coe, min_sal, max_sal) => {  
-  if (user.is_free && ! user.is_vol) return 0;
-  
-  const total_salary = user.salaryDTO.main_sal + user.salaryDTO.position_allowrance 
-    + user.salaryDTO.res_allowrance;
-  console.log(total_salary, " ", min_sal);
-  if (user.is_vol) {
-    if (total_salary < min_sal) {
-      return parseInt(0.18 * min_sal);
-    }    
-    if (total_salary > max_sal) {
-      return parseInt(0.18 * max_sal);
-    }
-  }
-
-  if (total_salary > max_sal) return 0;
-
-  if (total_salary < min_sal) return 0;
-
-  return parseInt(coe * total_salary);
 }

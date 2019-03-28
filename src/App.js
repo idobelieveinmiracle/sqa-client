@@ -54,7 +54,7 @@ class App extends Component {
     };
 
     Axios.post(url, account).then(res => {
-      if (res.data) {
+      if (res.status === 200) {
         this.props.cookies.set('username', username);
         this.props.cookies.set('password', password);
         this.setState({

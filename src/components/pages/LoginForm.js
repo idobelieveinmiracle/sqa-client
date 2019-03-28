@@ -31,6 +31,11 @@ export default class LoginForm extends Component {
       return 0;
     }
 
+    if (! /^[a-z][a-z0-9]{5,29}@gmail.com$/gm.test(this.state.username)) {
+      alert("Sai định dạng email");
+      return 0;
+    }
+
     this.props.login(this.state.username, this.state.password); // call login function from props
     this.props.history.push('/');
   }
@@ -62,7 +67,7 @@ export default class LoginForm extends Component {
               onChange={ this.handleChange }
             />
           </div>
-          <button type="submit" className="btn btn-default">Đăng nhập</button><br/><br/>
+          <button id="submitBtn" type="submit" className="btn btn-default">Đăng nhập</button><br/><br/>
           <Link to="/register" >Đăng ký</Link>
         </form>
       </div>

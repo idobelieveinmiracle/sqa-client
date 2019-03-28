@@ -127,10 +127,14 @@ export default class Register extends Component {
 
     // init validating variable
     const {full_name, id_person, main_sal, phone, province,
-        district, town, date_of_birth} = this.state;
+        district, town, date_of_birth, email} = this.state;
 
     let {res_allowrance, position_allowrance} = this.state;
     
+    if ( ! validate_email(email) ) {
+      alert("Nhập sai định dạng email");
+      return 0;
+    }
 
     const full_name_test = change_alias(full_name);
     let count = 0;
@@ -235,7 +239,7 @@ export default class Register extends Component {
 
     if (!isNaN(parseFloat(res_allowrance))) {
       if (parseFloat(res_allowrance) < 0) {
-        alert('Phụ cấp chức vụ phải lớn hơn hoặc bằng 0');
+        alert('Phụ cấp trách nhiệm phải lớn hơn hoặc bằng 0');
         return 0;
       }
     } else {
@@ -297,7 +301,7 @@ export default class Register extends Component {
           <option value="00">Chưa chọn</option>
           {
             this.state.provinces_list.map(province => 
-              (<option value={province.matp} key={province.matp}>{province.name}</option>)
+              (<option value={province.matp} id={province.matp} key={province.matp}>{province.name}</option>)
             )
           }
         </select>
@@ -317,7 +321,7 @@ export default class Register extends Component {
           <option value="00">Chưa chọn</option>
           {
             this.state.districts_list.map(province => 
-              (<option value={province.maqh} key={province.maqh}>{province.name}</option>)
+              (<option value={province.maqh} id={province.maqh} key={province.maqh}>{province.name}</option>)
             )
           }
         </select>
@@ -334,10 +338,10 @@ export default class Register extends Component {
           onChange={this.handleChange}
           value={this.state.town}
         >
-          <option value="00">Chưa chọn</option>
+          <option value="00" id="00">Chưa chọn</option>
           {
             this.state.towns_list.map(province => 
-              (<option value={province.xaid} key={province.xaid}>{province.name}</option>)
+              (<option value={province.xaid} id={province.xaid} key={province.xaid}>{province.name}</option>)
             )
           }
         </select>
@@ -394,8 +398,8 @@ export default class Register extends Component {
               name="is_male" 
               onChange={this.handleChange}
             >
-              <option>Nam</option>
-              <option>Nữ</option>
+              <option id="male">Nam</option>
+              <option id="female">Nữ</option>
             </select>
           </div>
            
@@ -442,8 +446,8 @@ export default class Register extends Component {
               name="is_vol" 
               onChange={this.handleChange}
             >
-              <option>Bắt buộc</option>
-              <option>Tự nguyện</option>
+              <option id="not_vol">Bắt buộc</option>
+              <option id="vol">Tự nguyện</option>
             </select>
           </div>
 
@@ -467,8 +471,8 @@ export default class Register extends Component {
               name="is_free" 
               onChange={this.handleChange}
             >
-              <option>Không</option>
-              <option>Có</option>
+              <option id="not_free">Không</option>
+              <option id="free">Có</option>
             </select>
           </div>
 
@@ -481,10 +485,10 @@ export default class Register extends Component {
               disabled={ ! this.state.is_free }
               onChange={this.handleChange}
             >
-              <option>Đang nhận lương hưu</option>
-              <option>Cán bộ xã/phường/thị trấn</option>
-              <option>Quân nhân, công an</option>
-              <option>Đang hưởng trợ cấp do mất sức lao động</option>
+              <option id="fd1">Đang nhận lương hưu</option>
+              <option id="fd2">Cán bộ xã/phường/thị trấn</option>
+              <option id="fd3">Quân nhân, công an</option>
+              <option id="fd4">Đang hưởng trợ cấp do mất sức lao động</option>
             </select>
           </div>
 
@@ -524,7 +528,7 @@ export default class Register extends Component {
             />
           </div> 
 
-          <button type="submit" className="btn btn-default" disabled={this.state.is_handling}>{display_btn_name}</button>
+          <button id="submitBtn" type="submit" className="btn btn-default" disabled={this.state.is_handling}>{display_btn_name}</button>
         </form>
       </div>
     )
@@ -544,4 +548,8 @@ const change_alias = (alias) => {
   str = str.replace(/ + /g," ");
   str = str.trim(); 
   return str;
+}
+
+const validate_email = (mail) => {
+  return /^[a-z][a-z0-9]{5,29}@gmail.com$/gm.test(mail);
 }
