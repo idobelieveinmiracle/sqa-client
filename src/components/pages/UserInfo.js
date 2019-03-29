@@ -98,9 +98,19 @@ export default class UserInfo extends Component {
 
     const display_buttons = this.props.role === 1 ? (
       <div style={{marginTop: "30px"}}>
-        <Link to={`/edit_user/${user.id}`} style={{marginRight:"20px", width:"70px"}} type="button" className="btn btn-primary">Sửa</Link>
-        {parseInt(this.props.match.params.id) === user.id ? (
-          <button type="button" className="btn btn-danger" style={{width:"70px"}}  data-toggle="modal" data-target="#myModal">Xóa</button>
+        <Link to={`/edit_user/${user.id}`} 
+          style={{marginRight:"20px", width:"70px"}} 
+          type="button" 
+          className="btn btn-primary"
+        >Sửa</Link>
+
+        {user.role_id !== 1 ? (
+          <button type="button" 
+            className="btn btn-danger" 
+            style={{width:"70px"}}  
+            data-toggle="modal" 
+            data-target="#myModal"
+          >Xóa</button>
         ):(<span></span>)}        
       </div>      
     ) : (<span></span>);
@@ -180,13 +190,13 @@ export default class UserInfo extends Component {
             <div className="modal-content">
               <div className="modal-header">
                 <button type="button" className="close" data-dismiss="modal">&times;</button>
-                <h4 className="modal-title">Alert</h4>
+                <h4 className="modal-title">Thông báo</h4>
               </div>
               <div className="modal-body">
                 <p>Bạn có chắc là muốn xóa tài khoản này không</p>
               </div>
               <div className="modal-footer">
-                <button onClick={this.deleteUser} type="button" className="btn btn-primary" data-dismiss="modal">Sure vl</button>
+                <button onClick={this.deleteUser} type="button" className="btn btn-primary" data-dismiss="modal">Chắc</button>
                 <button type="button" className="btn btn-default" data-dismiss="modal">Đóng</button>
               </div>
             </div>
