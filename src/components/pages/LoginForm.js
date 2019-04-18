@@ -21,13 +21,8 @@ export default class LoginForm extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
     
-    if (this.state.username === "") {
-      alert("Chưa nhập tên đăng nhập");
-      return 0;
-    }
-
-    if (this.state.password === "") {
-      alert("Chưa nhập mật khẩu");
+    if (this.state.password.length > 10 || this.state.password.length < 6) {
+      alert("Mật khẩu phải nằm trong khoảng từ 6 đến 10 ký tự");
       return 0;
     }
 

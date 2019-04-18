@@ -24,7 +24,26 @@ export default class Register extends Component {
     res_allowrance: "",
     provinces_list: [],
     districts_list: [],
-    towns_list: []
+    towns_list: [],
+    alert: {
+      email: "",
+      full_name: "",
+      id_person: "",
+      is_male: "",
+      date_of_birth: "",
+      phone: "",
+      province: "",
+      district: "",
+      town: "",
+      area: "",
+      is_vol: "",
+      career: "",
+      is_free: "",
+      free_detail: "",
+      main_sal: "",
+      position_allowrance: "",
+      res_allowrance: "",
+    }
   }
 
   componentDidMount = () => {
@@ -130,6 +149,19 @@ export default class Register extends Component {
         district, town, date_of_birth, email} = this.state;
 
     let {res_allowrance, position_allowrance} = this.state;
+
+    if (full_name.length === 0 ||
+      id_person.length === 0 ||
+      email.length === 0 ||
+      main_sal.length === 0 ||
+      phone.length === 0 ||
+      province === "00" ||
+      district === "00" ||
+      town === "00" ||
+      ! date_of_birth) {
+      alert("Chưa nhập đủ thông tin");
+      return 0;
+    }
     
     if ( ! validate_email(email) ) {
       alert("Nhập sai định dạng email");
@@ -194,8 +226,9 @@ export default class Register extends Component {
       }
     }   
 
-    if (phone.length !== 10 || phone.charAt(0) !== '0' || phone.charAt(1) !== '9') {
-      alert('Số điện thoại phải bao gồm 10 ký tự số và bắt đầu bởi "09"');
+    if (phone.length !== 10 || phone.charAt(0) !== '0' || ! (phone.charAt(1) === '9' || 
+        phone.charAt(1) === '8' || phone.charAt(1) === '3')) {
+      alert('Số điện thoại phải bao gồm 10 ký tự số và bắt đầu bởi "09" hoặc "03" hoặc "08"');
       return 0;
     }
 
@@ -214,36 +247,18 @@ export default class Register extends Component {
       return 0;
     }
 
-    if (!isNaN(parseFloat(main_sal))) {
-      if (parseFloat(main_sal) <= 0) {
-        alert('Lương chính phải là số lớn hơn 0');
-        return 0;
-      }
-    } else {
-      alert('Nhập sai lương chính');
+    if (isNaN(parseFloat(main_sal))) {
+      alert("Nhập sai định dạng lương chính");
       return 0;
     }
 
-    if (position_allowrance === "") position_allowrance = "0";
-    if (res_allowrance === "") res_allowrance = "0";
-
-    if (!isNaN(parseFloat(position_allowrance))) {
-      if (parseFloat(position_allowrance) < 0) {
-        alert('Phụ cấp chức vụ phải lớn hơn hoặc bằng 0');
-        return 0;
-      }
-    } else {
-      alert('Nhập sai phụ cấp chức vụ');
+    if (isNaN(parseFloat(position_allowrance))) {
+      alert("Nhập sai định dạng phụ cấp chức vụ");
       return 0;
     }
 
-    if (!isNaN(parseFloat(res_allowrance))) {
-      if (parseFloat(res_allowrance) < 0) {
-        alert('Phụ cấp trách nhiệm phải lớn hơn hoặc bằng 0');
-        return 0;
-      }
-    } else {
-      alert('Nhập sai phụ cấp trách nhiệm');
+    if (isNaN(parseFloat(res_allowrance))) {
+      alert("Nhập sai định dạng phụ cấp trách nhiệm");
       return 0;
     }
 
@@ -272,13 +287,16 @@ export default class Register extends Component {
 
     this.setState({is_handling: true});
 
+    // Axios.get(`${cf.host_name}/users`)
+
     // send
     Axios.post(`${cf.host_name}/users/register`, user).then(res => {
+      console.log(res.status);
       if (res.status === 201) {
         alert("Đăng ký thành công, thông tin đăng nhập và mật khẩu đã được gửi về email của bạn");
         this.props.history.push("/");
       } else {
-        alert('Tên đăng nhập này đã được đăng ký, vui lòng lập lại tên đăng nhập');
+        alert('Email này đã được đăng ký, vui lòng lập lại email');
         this.setState({is_handling: false});
       }
     }).catch(err => {
@@ -291,12 +309,13 @@ export default class Register extends Component {
   render() {
     const provinces_select = (
       <div className="form-group">
-        <label htmlFor="province">Tỉnh/Thành phố:</label>
+        <label htmlFor="province">Tỉnh/Thành phố: <span style={{color:"red"}}>{this.state.alert.province}</span></label>
         <select 
           className="form-control" 
           id="province" 
           name="province" 
           onChange={this.handleChange}
+          required
         >
           <option value="00">Chưa chọn</option>
           {
@@ -310,13 +329,14 @@ export default class Register extends Component {
 
     const districts_select = (
       <div className="form-group">
-        <label htmlFor="district">Quận/Huyện:</label>
+        <label htmlFor="district">Quận/Huyện: <span style={{color:"red"}}>{this.state.alert.district}</span></label>
         <select 
           className="form-control" 
           id="district" 
           name="district" 
           onChange={this.handleChange}
           value={this.state.district}
+          required
         >
           <option value="00">Chưa chọn</option>
           {
@@ -330,13 +350,14 @@ export default class Register extends Component {
 
     const towns_select = (
       <div className="form-group">
-        <label htmlFor="town">Xã/Phường/Thị trấn:</label>
+        <label htmlFor="town">Xã/Phường/Thị trấn: <span style={{color:"red"}}>{this.state.alert.town}</span></label>
         <select 
           className="form-control" 
           id="town" 
           name="town" 
           onChange={this.handleChange}
           value={this.state.town}
+          required
         >
           <option value="00" id="00">Chưa chọn</option>
           {
@@ -355,7 +376,7 @@ export default class Register extends Component {
         <h1 style={ {textAlign: "center"} }>Đăng ký</h1>
         <form onSubmit={ this.handleSubmit }>
           <div className="form-group">
-            <label htmlFor="email">Email:</label>
+            <label htmlFor="email">Email: <span style={{color:"red"}}>{this.state.alert.email}</span></label>
             <input 
               type="email" 
               className="form-control" 
@@ -363,11 +384,12 @@ export default class Register extends Component {
               name="email" 
               value={this.state.email}
               onChange={ this.handleChange }
+              required
             />
           </div>
           
           <div className="form-group">
-            <label htmlFor="full_name">Tên đầy đủ:</label>
+            <label htmlFor="full_name">Tên đầy đủ: <span style={{color:"red"}}>{this.state.alert.full_name}</span></label>
             <input 
               type="text" 
               className="form-control" 
@@ -375,11 +397,12 @@ export default class Register extends Component {
               name="full_name" 
               value={this.state.full_name}
               onChange={ this.handleChange }
+              required
             />
           </div>   
 
           <div className="form-group">
-            <label htmlFor="id_person">Số chứng minh nhân dân:</label>
+            <label htmlFor="id_person">Số chứng minh nhân dân: <span style={{color:"red"}}>{this.state.alert.id_person}</span></label>
             <input 
               type="text" 
               className="form-control" 
@@ -387,16 +410,18 @@ export default class Register extends Component {
               name="id_person" 
               value={this.state.id_person}
               onChange={ this.handleChange }
+              required
             />
           </div>  
 
           <div className="form-group">
-            <label htmlFor="is_male">Giới tính:</label>
+            <label htmlFor="is_male">Giới tính: <span style={{color:"red"}}>{this.state.alert.is_male}</span></label>
             <select 
               className="form-control" 
               id="is_male" 
               name="is_male" 
               onChange={this.handleChange}
+              required
             >
               <option id="male">Nam</option>
               <option id="female">Nữ</option>
@@ -404,7 +429,7 @@ export default class Register extends Component {
           </div>
            
           <div className="form-group">
-            <label htmlFor="date_of_birth">Ngày sinh:</label>
+            <label htmlFor="date_of_birth">Ngày sinh: <span style={{color:"red"}}>{this.state.alert.date_of_birth}</span></label>
             <input 
               type="date" 
               className="form-control" 
@@ -412,11 +437,12 @@ export default class Register extends Component {
               name="date_of_birth" 
               value={this.state.date_of_birth}
               onChange={ this.handleChange }
+              required
             />
           </div>    
 
           <div className="form-group">
-            <label htmlFor="phone">Số điện thoại:</label>
+            <label htmlFor="phone">Số điện thoại: <span style={{color:"red"}}>{this.state.alert.phone}</span></label>
             <input 
               type="text" 
               className="form-control" 
@@ -424,6 +450,7 @@ export default class Register extends Component {
               name="phone" 
               value={this.state.phone}
               onChange={ this.handleChange }
+              required
             />
           </div>  
 
@@ -439,12 +466,13 @@ export default class Register extends Component {
           </div>
 
           <div className="form-group">
-            <label htmlFor="is_vol">Hình thức tham gia bảo hiểm:</label>
+            <label htmlFor="is_vol">Hình thức tham gia bảo hiểm: <span style={{color:"red"}}>{this.state.alert.is_vol}</span></label>
             <select 
               className="form-control" 
               id="is_vol" 
               name="is_vol" 
               onChange={this.handleChange}
+              required
             >
               <option id="not_vol">Bắt buộc</option>
               <option id="vol">Tự nguyện</option>
@@ -452,7 +480,7 @@ export default class Register extends Component {
           </div>
 
           <div className="form-group">
-            <label htmlFor="career">Nghề nghiệp:</label>
+            <label htmlFor="career">Nghề nghiệp: <span style={{color:"red"}}>{this.state.alert.career}</span></label>
             <input 
               type="text" 
               className="form-control" 
@@ -460,16 +488,18 @@ export default class Register extends Component {
               name="career" 
               value={this.state.career}
               onChange={ this.handleChange }
+              required
             />
           </div>  
 
           <div className="form-group">
-            <label htmlFor="is_free">Miễn giảm:</label>
+            <label htmlFor="is_free">Miễn giảm: <span style={{color:"red"}}>{this.state.alert.is_free}</span></label>
             <select 
               className="form-control" 
               id="is_free" 
               name="is_free" 
               onChange={this.handleChange}
+              required
             >
               <option id="not_free">Không</option>
               <option id="free">Có</option>
@@ -477,13 +507,14 @@ export default class Register extends Component {
           </div>
 
           <div className="form-group">
-            <label htmlFor="free_detail">Chi tiết miễn giảm:</label>
+            <label htmlFor="free_detail">Chi tiết miễn giảm: <span style={{color:"red"}}>{this.state.alert.free_detail}</span></label>
             <select 
               className="form-control" 
               id="free_detail" 
               name="free_detail" 
               disabled={ ! this.state.is_free }
               onChange={this.handleChange}
+              required
             >
               <option id="fd1">Đang nhận lương hưu</option>
               <option id="fd2">Cán bộ xã/phường/thị trấn</option>
@@ -493,7 +524,7 @@ export default class Register extends Component {
           </div>
 
           <div className="form-group">
-            <label htmlFor="main_sal">Lương chính:</label>
+            <label htmlFor="main_sal">Lương chính: <span style={{color:"red"}}>{this.state.alert.main_sal}</span></label>
             <input 
               type="text" 
               className="form-control" 
@@ -501,11 +532,12 @@ export default class Register extends Component {
               name="main_sal" 
               value={this.state.main_sal}
               onChange={ this.handleChange }
+              required
             />
           </div> 
 
           <div className="form-group">
-            <label htmlFor="position_allowrance">Phụ cấp chức vụ:</label>
+            <label htmlFor="position_allowrance">Phụ cấp chức vụ: <span style={{color:"red"}}>{this.state.alert.position_allowrance}</span></label>
             <input 
               type="text" 
               className="form-control" 
@@ -513,11 +545,12 @@ export default class Register extends Component {
               name="position_allowrance" 
               value={this.state.position_allowrance}
               onChange={ this.handleChange }
+              required
             />
           </div> 
 
           <div className="form-group">
-            <label htmlFor="res_allowrance">Phụ cấp trách nhiệm:</label>
+            <label htmlFor="res_allowrance">Phụ cấp trách nhiệm: <span style={{color:"red"}}>{this.state.alert.res_allowrance}</span></label>
             <input 
               type="text" 
               className="form-control" 
@@ -525,6 +558,7 @@ export default class Register extends Component {
               name="res_allowrance" 
               value={this.state.res_allowrance}
               onChange={ this.handleChange }
+              required
             />
           </div> 
 
