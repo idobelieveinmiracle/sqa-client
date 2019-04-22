@@ -180,7 +180,7 @@ export default class UserInfo extends Component {
                  
           <div style={{color: "red"}} className="row">
             <p className="col-sm-2"><strong>Tiền bảo hiểm phải đóng:</strong></p>
-            <p style={{fontSize:"25px"}} className="col-sm-10">{ this.state.user.insurance + " VNĐ" }</p>
+            <p id="insurance" style={{fontSize:"25px"}} className="col-sm-10">{ this.state.user.insurance + " VNĐ" }</p>
           </div>
         </div>
         {display_buttons}

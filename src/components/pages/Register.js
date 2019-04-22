@@ -25,7 +25,7 @@ export default class Register extends Component {
     provinces_list: [],
     districts_list: [],
     towns_list: [],
-    alert: {
+    alt: {
       email: "",
       full_name: "",
       id_person: "",
@@ -144,124 +144,248 @@ export default class Register extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
 
-    // init validating variable
+    let alt = {
+      email: "",
+      full_name: "",
+      id_person: "",
+      is_male: "",
+      date_of_birth: "",
+      phone: "",
+      province: "",
+      district: "",
+      town: "",
+      area: "",
+      is_vol: "",
+      career: "",
+      is_free: "",
+      free_detail: "",
+      main_sal: "",
+      position_allowrance: "",
+      res_allowrance: "",
+    }
+
     const {full_name, id_person, main_sal, phone, province,
-        district, town, date_of_birth, email} = this.state;
+        district, town, date_of_birth, email, career} = this.state;
 
     let {res_allowrance, position_allowrance} = this.state;
+    let check = true;
 
-    if (full_name.length === 0 ||
-      id_person.length === 0 ||
-      email.length === 0 ||
-      main_sal.length === 0 ||
-      phone.length === 0 ||
-      province === "00" ||
-      district === "00" ||
-      town === "00" ||
-      ! date_of_birth) {
-      alert("Chưa nhập đủ thông tin");
-      return 0;
-    }
-    
-    if ( ! validate_email(email) ) {
-      alert("Nhập sai định dạng email");
-      return 0;
+    if (career.length === 0) {
+      alt = {
+        ...alt,
+        career: "Không được để trống trường này"
+      }
+      check = false;
     }
 
-    const full_name_test = change_alias(full_name);
-    let count = 0;
+    if (full_name.length === 0) {
+      alt = {
+        ...alt,
+        full_name: "Chưa nhập đủ thông tin"
+      }
+      check = false;
+    }
 
-    for (let i = 1; i < full_name_test.length; i++) {
-      const x = full_name_test.charAt(i);
-      if (x === ' ') {
-        count++;
-        continue;
+    if (id_person.length === 0) {
+      alt = {
+        ...alt,
+        id_person: "Chưa nhập đủ thông tin"
+      }
+      check = false;
+    } else {      
+      if (id_person.length !== 12) {
+        alt = {
+          ...alt,
+          id_person: "Số chứng minh nhân dân phải có 12 ký tự số"
+        }
+        check = false;
       }
 
-      if (x >= 'a' && x <= 'z') continue;
-
-      alert('Họ và tên không hợp lệ');
-      return 0;
-    }
-
-    if (count > 6) {
-      alert('Tên của bạn nhập dài quá -.-');
-      return 0;
-    }
-
-    if (id_person.length !== 12) {
-      alert('Số chứng minh nhân dân phải có 12 ký tự số');
-      return 0;
-    }
-
-    for (let i = 0; i < 12; i++) {
-      if (id_person.charAt(i) < '0' || id_person.charAt(i) > '9') {
-        alert('Số chứng minh nhân dân phải có 12 ký tự số');
-        return 0;
-      }
-    }
-    
-    const dob = new Date(date_of_birth);
-    const current_date = new Date();
-    const age = current_date.getFullYear() - dob.getFullYear();
-
-    if (age > 60 || age < 15) {
-      alert("Không nằm trong độ tuổi đóng bảo hiểm");
-      return 0;
-    };
-
-    if (age === 60 || age === 15) {
-      const month = current_date.getMonth() - dob.getMonth();
-      if (month > 0) {
-        alert("Không nằm trong độ tuổi đóng bảo hiểm");
-        return 0;
-      }
-
-      if (month === 0) {
-        const date = current_date.getDate() - dob.getDate();
-        if (date > 0) {
-          alert("Không nằm trong độ tuổi đóng bảo hiểm");
-          return 0
+      for (let i = 0; i < 12; i++) {
+        if (id_person.charAt(i) < '0' || id_person.charAt(i) > '9') {        
+          alt = {
+            ...alt,
+            id_person: "Số chứng minh nhân dân phải có 12 ký tự số"
+          }
+          check = false;
         }
       }
-    }   
+    }
 
-    if (phone.length !== 10 || phone.charAt(0) !== '0' || ! (phone.charAt(1) === '9' || 
-        phone.charAt(1) === '8' || phone.charAt(1) === '3')) {
-      alert('Số điện thoại phải bao gồm 10 ký tự số và bắt đầu bởi "09" hoặc "03" hoặc "08"');
-      return 0;
+    if (main_sal.length === 0) {
+      alt = {
+        ...alt,
+        main_sal: "Chưa nhập đủ thông tin"
+      }
+      check = false;
+    } else {
+      if (isNaN(parseFloat(main_sal))) {
+        alt = {
+          ...alt,
+          main_sal: "Nhập sai định dạng"
+        }
+        check = false;
+      } else {
+        if (parseFloat(main_sal) <= 0){
+          alt = {
+            ...alt,
+            main_sal: "Lương chính phải lớn hơn hoặc bằng 0"
+          }
+          check = false;
+        }      
+      }
+    }
+
+    if (phone.length === 0) {
+      alt = {
+        ...alt,
+        phone: "Chưa nhập đủ thông tin"
+      }
+      check = false;
+    } else {
+      if (! /(09|03|08)+([0-9]{8})\b/gm.test(phone)){   
+        alt = {
+          ...alt,
+          phone: 'Số điện thoại phải bao gồm 10 ký tự số và bắt đầu bởi "09" hoặc "03" hoặc "08"'
+        }
+        check = false;
+      }
+    }
+    
+    if (email.length === 0) {
+      alt = {
+        ...alt,
+        email: "Chưa nhập đủ thông tin"
+      }
+      check = false;
+    } else {
+      if ( ! validate_email(email) ) {
+        alt = {
+          ...alt,
+          email: "Nhập sai định dạng email"
+        }
+        check = false;
+      }
+    }
+
+    if (res_allowrance.length === 0) {
+      alt = {
+        ...alt,
+        res_allowrance: "Chưa nhập đủ thông tin"
+      }
+      check = false;
+    } else {
+      if (isNaN(parseFloat(res_allowrance))) {
+        alt = {
+          ...alt,
+          res_allowrance: "Nhập sai định dạng"
+        }
+        check = false;
+      } else {
+        if (parseFloat(res_allowrance) <= 0){
+          alt = {
+            ...alt,
+            res_allowrance: "Phụ cấp trách nhiệm phải lớn hơn hoặc bằng 0"
+          }
+          check = false;
+        }      
+      }
+    }
+
+    if (position_allowrance.length === 0) {
+      alt = {
+        ...alt,
+        position_allowrance: "Chưa nhập đủ thông tin"
+      }
+      check = false;
+    } else {      
+      if (isNaN(parseFloat(position_allowrance))) {
+        alt = {
+          ...alt,
+          position_allowrance: "Nhập sai định dạng"
+        }
+        check = false;
+      } else {
+        if (parseFloat(position_allowrance) <= 0){
+          alt = {
+            ...alt,
+            position_allowrance: "Phụ cấp chức vụ phải lớn hơn hoặc bằng 0"
+          }
+          check = false;
+        }      
+      }
     }
 
     if (province === "00") {
-      alert("Bạn chưa chọn tỉnh/thành");
-      return 0;
+      alt = {
+        ...alt,
+        province: "Yêu cầu lựa chọn Tỉnh/Thành phố"
+      }
+      check = false;
     }
 
     if (district === "00") {
-      alert("Bạn chưa chọn quận/huyện")
-      return 0;
+      alt = {
+        ...alt,
+        district: "Yêu cầu lựa chọn Quận/Huyện"
+      }
+      check = false;
     }
-
+    
     if (town === "00") {
-      alert("Bạn chưa chọn xã/phường/thị trấn");
-      return 0;
+      alt = {
+        ...alt,
+        town: "Yêu cầu lựa chọn Xã/Phường/Thị trấn"
+      }
+      check = false;
     }
 
-    if (isNaN(parseFloat(main_sal))) {
-      alert("Nhập sai định dạng lương chính");
-      return 0;
+    //console.log(! date_of_birth);
+    if (! date_of_birth) {
+      //console.log("ádas");
+      alt = {
+        ...alt,
+        date_of_birth: "Chưa nhập đủ thông tin"
+      }
+      check = false;
     }
 
-    if (isNaN(parseFloat(position_allowrance))) {
-      alert("Nhập sai định dạng phụ cấp chức vụ");
-      return 0;
+    if (date_of_birth) {
+      const dob = new Date(date_of_birth);
+      const current_date = new Date();
+      const age = current_date.getFullYear() - dob.getFullYear();
+  
+      if (age > 60 || age < 15) {
+        alt = {
+          ...alt,
+          date_of_birth: "Không nằm trong độ tuổi đóng bảo hiểm"
+        }
+        check = false;
+      };
+  
+      if (age === 60 || age === 15) {
+        const month = current_date.getMonth() - dob.getMonth();
+        if (month > 0) {
+          alt = {
+            ...alt,
+            date_of_birth: "Không nằm trong độ tuổi đóng bảo hiểm"
+          }
+          check = false;
+        }
+  
+        if (month === 0) {
+          const date = current_date.getDate() - dob.getDate();
+          if (date > 0) {
+            alt = {
+              ...alt,
+              date_of_birth: "Không nằm trong độ tuổi đóng bảo hiểm"
+            }
+            check = false;
+          }
+        }
+      }   
     }
-
-    if (isNaN(parseFloat(res_allowrance))) {
-      alert("Nhập sai định dạng phụ cấp trách nhiệm");
-      return 0;
-    }
-
+    
     const send_user = this.state;
 
     // init data to send request
@@ -285,37 +409,73 @@ export default class Register extends Component {
       }      
     }
 
-    this.setState({is_handling: true});
+    Axios.get(`${cf.host_name}/users`).then(res => {
+      if (res.status === 200) {
+        const users = res.data;
 
-    // Axios.get(`${cf.host_name}/users`)
+        users.forEach(user => {
+          if (user.phone === this.state.phone) {
+            alt = {
+              ...alt,
+              phone: "Số điện thoại vừa nhập đã tồn tại"
+            }
+            check = false;
+          }
+          if (user.id_person === this.state.id_person) {
+            alt = {
+              ...alt,
+              id_person: "Số chứng minh nhân dân đã tồn tại"
+            }
+            check = false;
+          }
+          if (user.email === this.state.email) {
+            alt = {
+              ...alt,
+              email: "Địa chỉ email vừa nhập đã tồn tại"
+            }
+            check = false;
+          }
+        });
 
-    // send
-    Axios.post(`${cf.host_name}/users/register`, user).then(res => {
-      console.log(res.status);
-      if (res.status === 201) {
-        alert("Đăng ký thành công, thông tin đăng nhập và mật khẩu đã được gửi về email của bạn");
-        this.props.history.push("/");
-      } else {
-        alert('Email này đã được đăng ký, vui lòng lập lại email');
-        this.setState({is_handling: false});
+        if (check) {
+
+          this.setState({is_handling: true});
+          // send
+          Axios.post(`${cf.host_name}/users/register`, user).then(res => {
+            console.log(res.status);
+            if (res.status === 201) {
+              alert("Đăng ký thành công, thông tin đăng nhập và mật khẩu đã được gửi về email của bạn");
+              this.props.history.push("/");
+            } else {
+              alt = {
+                ...alt,
+                email: "Email này đã được đăng ký, vui lòng lập lại email"
+              }
+              this.setState({alt, is_handling: false});
+            }
+          }).catch(err => {
+            console.log(err);
+            this.setState({is_handling: false});
+          });
+        } else {
+          this.setState({alt});
+        }
       }
-    }).catch(err => {
-      console.log(err);
-      this.setState({is_handling: false});
-    });
+    })
+
+    
     
   } // handingSubmit
 
   render() {
     const provinces_select = (
       <div className="form-group">
-        <label htmlFor="province">Tỉnh/Thành phố: <span style={{color:"red"}}>{this.state.alert.province}</span></label>
+        <label htmlFor="province">Tỉnh/Thành phố: <span id="province_alert" style={{color:"red"}}>{this.state.alt.province}</span></label>
         <select 
           className="form-control" 
           id="province" 
           name="province" 
           onChange={this.handleChange}
-          required
         >
           <option value="00">Chưa chọn</option>
           {
@@ -329,14 +489,13 @@ export default class Register extends Component {
 
     const districts_select = (
       <div className="form-group">
-        <label htmlFor="district">Quận/Huyện: <span style={{color:"red"}}>{this.state.alert.district}</span></label>
+        <label htmlFor="district">Quận/Huyện: <span id="district_alert" style={{color:"red"}}>{this.state.alt.district}</span></label>
         <select 
           className="form-control" 
           id="district" 
           name="district" 
           onChange={this.handleChange}
           value={this.state.district}
-          required
         >
           <option value="00">Chưa chọn</option>
           {
@@ -350,14 +509,13 @@ export default class Register extends Component {
 
     const towns_select = (
       <div className="form-group">
-        <label htmlFor="town">Xã/Phường/Thị trấn: <span style={{color:"red"}}>{this.state.alert.town}</span></label>
+        <label htmlFor="town">Xã/Phường/Thị trấn: <span id="town_alert" style={{color:"red"}}>{this.state.alt.town}</span></label>
         <select 
           className="form-control" 
           id="town" 
           name="town" 
           onChange={this.handleChange}
           value={this.state.town}
-          required
         >
           <option value="00" id="00">Chưa chọn</option>
           {
@@ -376,20 +534,19 @@ export default class Register extends Component {
         <h1 style={ {textAlign: "center"} }>Đăng ký</h1>
         <form onSubmit={ this.handleSubmit }>
           <div className="form-group">
-            <label htmlFor="email">Email: <span style={{color:"red"}}>{this.state.alert.email}</span></label>
+            <label htmlFor="email">Email: <span id="email_alert" style={{color:"red"}}>{this.state.alt.email}</span></label>
             <input 
-              type="email" 
+              type="text" 
               className="form-control" 
               id="email" 
               name="email" 
               value={this.state.email}
               onChange={ this.handleChange }
-              required
             />
           </div>
           
           <div className="form-group">
-            <label htmlFor="full_name">Tên đầy đủ: <span style={{color:"red"}}>{this.state.alert.full_name}</span></label>
+            <label htmlFor="full_name">Tên đầy đủ: <span id="full_name_alert" style={{color:"red"}}>{this.state.alt.full_name}</span></label>
             <input 
               type="text" 
               className="form-control" 
@@ -397,12 +554,11 @@ export default class Register extends Component {
               name="full_name" 
               value={this.state.full_name}
               onChange={ this.handleChange }
-              required
             />
           </div>   
 
           <div className="form-group">
-            <label htmlFor="id_person">Số chứng minh nhân dân: <span style={{color:"red"}}>{this.state.alert.id_person}</span></label>
+            <label htmlFor="id_person">Số chứng minh nhân dân: <span id="id_person_alert" style={{color:"red"}}>{this.state.alt.id_person}</span></label>
             <input 
               type="text" 
               className="form-control" 
@@ -410,18 +566,16 @@ export default class Register extends Component {
               name="id_person" 
               value={this.state.id_person}
               onChange={ this.handleChange }
-              required
             />
           </div>  
 
           <div className="form-group">
-            <label htmlFor="is_male">Giới tính: <span style={{color:"red"}}>{this.state.alert.is_male}</span></label>
+            <label htmlFor="is_male">Giới tính: <span id="is_male_alert" style={{color:"red"}}>{this.state.alt.is_male}</span></label>
             <select 
               className="form-control" 
               id="is_male" 
               name="is_male" 
               onChange={this.handleChange}
-              required
             >
               <option id="male">Nam</option>
               <option id="female">Nữ</option>
@@ -429,7 +583,7 @@ export default class Register extends Component {
           </div>
            
           <div className="form-group">
-            <label htmlFor="date_of_birth">Ngày sinh: <span style={{color:"red"}}>{this.state.alert.date_of_birth}</span></label>
+            <label htmlFor="date_of_birth">Ngày sinh: <span id="date_of_birth_alert" style={{color:"red"}}>{this.state.alt.date_of_birth}</span></label>
             <input 
               type="date" 
               className="form-control" 
@@ -437,12 +591,11 @@ export default class Register extends Component {
               name="date_of_birth" 
               value={this.state.date_of_birth}
               onChange={ this.handleChange }
-              required
             />
           </div>    
 
           <div className="form-group">
-            <label htmlFor="phone">Số điện thoại: <span style={{color:"red"}}>{this.state.alert.phone}</span></label>
+            <label htmlFor="phone">Số điện thoại: <span id="phone_alert" style={{color:"red"}}>{this.state.alt.phone}</span></label>
             <input 
               type="text" 
               className="form-control" 
@@ -450,7 +603,6 @@ export default class Register extends Component {
               name="phone" 
               value={this.state.phone}
               onChange={ this.handleChange }
-              required
             />
           </div>  
 
@@ -466,13 +618,12 @@ export default class Register extends Component {
           </div>
 
           <div className="form-group">
-            <label htmlFor="is_vol">Hình thức tham gia bảo hiểm: <span style={{color:"red"}}>{this.state.alert.is_vol}</span></label>
+            <label htmlFor="is_vol">Hình thức tham gia bảo hiểm: <span id="is_vol_alert" style={{color:"red"}}>{this.state.alt.is_vol}</span></label>
             <select 
               className="form-control" 
               id="is_vol" 
               name="is_vol" 
               onChange={this.handleChange}
-              required
             >
               <option id="not_vol">Bắt buộc</option>
               <option id="vol">Tự nguyện</option>
@@ -480,7 +631,7 @@ export default class Register extends Component {
           </div>
 
           <div className="form-group">
-            <label htmlFor="career">Nghề nghiệp: <span style={{color:"red"}}>{this.state.alert.career}</span></label>
+            <label htmlFor="career">Nghề nghiệp: <span id="career_alert" style={{color:"red"}}>{this.state.alt.career}</span></label>
             <input 
               type="text" 
               className="form-control" 
@@ -488,18 +639,16 @@ export default class Register extends Component {
               name="career" 
               value={this.state.career}
               onChange={ this.handleChange }
-              required
             />
           </div>  
 
           <div className="form-group">
-            <label htmlFor="is_free">Miễn giảm: <span style={{color:"red"}}>{this.state.alert.is_free}</span></label>
+            <label htmlFor="is_free">Miễn giảm: <span id="is_free_alert" style={{color:"red"}}>{this.state.alt.is_free}</span></label>
             <select 
               className="form-control" 
               id="is_free" 
               name="is_free" 
               onChange={this.handleChange}
-              required
             >
               <option id="not_free">Không</option>
               <option id="free">Có</option>
@@ -507,14 +656,13 @@ export default class Register extends Component {
           </div>
 
           <div className="form-group">
-            <label htmlFor="free_detail">Chi tiết miễn giảm: <span style={{color:"red"}}>{this.state.alert.free_detail}</span></label>
+            <label htmlFor="free_detail">Chi tiết miễn giảm: <span id="free_detail_alert" style={{color:"red"}}>{this.state.alt.free_detail}</span></label>
             <select 
               className="form-control" 
               id="free_detail" 
               name="free_detail" 
               disabled={ ! this.state.is_free }
               onChange={this.handleChange}
-              required
             >
               <option id="fd1">Đang nhận lương hưu</option>
               <option id="fd2">Cán bộ xã/phường/thị trấn</option>
@@ -524,7 +672,7 @@ export default class Register extends Component {
           </div>
 
           <div className="form-group">
-            <label htmlFor="main_sal">Lương chính: <span style={{color:"red"}}>{this.state.alert.main_sal}</span></label>
+            <label htmlFor="main_sal">Lương chính: <span id="main_sal_alert" style={{color:"red"}}>{this.state.alt.main_sal}</span></label>
             <input 
               type="text" 
               className="form-control" 
@@ -532,12 +680,11 @@ export default class Register extends Component {
               name="main_sal" 
               value={this.state.main_sal}
               onChange={ this.handleChange }
-              required
             />
           </div> 
 
           <div className="form-group">
-            <label htmlFor="position_allowrance">Phụ cấp chức vụ: <span style={{color:"red"}}>{this.state.alert.position_allowrance}</span></label>
+            <label htmlFor="position_allowrance">Phụ cấp chức vụ: <span id="position_allowrance_alert" style={{color:"red"}}>{this.state.alt.position_allowrance}</span></label>
             <input 
               type="text" 
               className="form-control" 
@@ -545,12 +692,11 @@ export default class Register extends Component {
               name="position_allowrance" 
               value={this.state.position_allowrance}
               onChange={ this.handleChange }
-              required
             />
           </div> 
 
           <div className="form-group">
-            <label htmlFor="res_allowrance">Phụ cấp trách nhiệm: <span style={{color:"red"}}>{this.state.alert.res_allowrance}</span></label>
+            <label htmlFor="res_allowrance">Phụ cấp trách nhiệm: <span id="res_allowrance_alert" style={{color:"red"}}>{this.state.alt.res_allowrance}</span></label>
             <input 
               type="text" 
               className="form-control" 
@@ -558,7 +704,6 @@ export default class Register extends Component {
               name="res_allowrance" 
               value={this.state.res_allowrance}
               onChange={ this.handleChange }
-              required
             />
           </div> 
 
@@ -567,21 +712,6 @@ export default class Register extends Component {
       </div>
     )
   }
-}
-
-const change_alias = (alias) => {
-  var str = alias;
-  str = str.toLowerCase();
-  str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a"); 
-  str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e"); 
-  str = str.replace(/ì|í|ị|ỉ|ĩ/g,"i"); 
-  str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o"); 
-  str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u"); 
-  str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y"); 
-  str = str.replace(/đ/g,"d");
-  str = str.replace(/ + /g," ");
-  str = str.trim(); 
-  return str;
 }
 
 const validate_email = (mail) => {
