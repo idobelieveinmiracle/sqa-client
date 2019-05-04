@@ -164,10 +164,10 @@ export default class Register extends Component {
       res_allowrance: "",
     }
 
-    const {full_name, id_person, main_sal, phone, province,
+    const {full_name, id_person, phone, province,
         district, town, date_of_birth, email, career} = this.state;
 
-    let {res_allowrance, position_allowrance} = this.state;
+    let {res_allowrance, position_allowrance, main_sal} = this.state;
     let check = true;
 
     if (career.length === 0) {
@@ -219,14 +219,14 @@ export default class Register extends Component {
       }
       check = false;
     } else {
-      if (isNaN(parseFloat(main_sal))) {
+      if (isNaN(parseInt(main_sal))) {
         alt = {
           ...alt,
           main_sal: "Nhập sai định dạng"
         }
         check = false;
       } else {
-        if (parseFloat(main_sal) <= 0){
+        if (parseInt(main_sal) <= 0){
           alt = {
             ...alt,
             main_sal: "Lương chính phải lớn hơn hoặc bằng 0"
@@ -275,14 +275,14 @@ export default class Register extends Component {
       }
       check = false;
     } else {
-      if (isNaN(parseFloat(res_allowrance))) {
+      if (isNaN(parseInt(res_allowrance))) {
         alt = {
           ...alt,
           res_allowrance: "Nhập sai định dạng"
         }
         check = false;
       } else {
-        if (parseFloat(res_allowrance) <= 0){
+        if (parseInt(res_allowrance) <= 0){
           alt = {
             ...alt,
             res_allowrance: "Phụ cấp trách nhiệm phải lớn hơn hoặc bằng 0"
@@ -299,14 +299,14 @@ export default class Register extends Component {
       }
       check = false;
     } else {      
-      if (isNaN(parseFloat(position_allowrance))) {
+      if (isNaN(parseInt(position_allowrance))) {
         alt = {
           ...alt,
           position_allowrance: "Nhập sai định dạng"
         }
         check = false;
       } else {
-        if (parseFloat(position_allowrance) <= 0){
+        if (parseInt(position_allowrance) <= 0){
           alt = {
             ...alt,
             position_allowrance: "Phụ cấp chức vụ phải lớn hơn hoặc bằng 0"
@@ -444,7 +444,7 @@ export default class Register extends Component {
           Axios.post(`${cf.host_name}/users/register`, user).then(res => {
             console.log(res.status);
             if (res.status === 201) {
-              alert("Đăng ký thành công, thông tin đăng nhập và mật khẩu đã được gửi về email của bạn");
+              alert("Đăng ký thành công");
               this.props.history.push("/");
             } else {
               alt = {

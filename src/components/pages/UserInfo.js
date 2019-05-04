@@ -117,7 +117,7 @@ export default class UserInfo extends Component {
 
     return (
       <div className="container">
-        <h3 id="title">Thông tin người dùng</h3>
+        <h4 id="title">Thông tin người dùng</h4>
 
         <div className="container">
           <div className="row">

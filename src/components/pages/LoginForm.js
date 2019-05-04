@@ -21,13 +21,18 @@ export default class LoginForm extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
     
-    if (this.state.password.length > 10 || this.state.password.length < 6) {
-      alert("Mật khẩu phải nằm trong khoảng từ 6 đến 10 ký tự");
+    if (this.state.password.length === 0 && this.state.username.length !== 0) {
+      alert("Bạn chưa nhập password");
       return 0;
     }
 
-    if (! /^[a-z][a-z0-9]{5,29}@gmail.com$/gm.test(this.state.username)) {
-      alert("Sai định dạng email");
+    if (this.state.username.length === 0 && this.state.password.length !== 0) {
+      alert("Bạn chưa nhập email");
+      return 0;
+    }
+
+    if (this.state.username.length === 0 && this.state.password.length === 0) {
+      alert("Bạn chưa nhập email và password");
       return 0;
     }
 
@@ -41,7 +46,7 @@ export default class LoginForm extends Component {
         <h1 style={ {textAlign: "center"} }>Đăng nhập</h1>
         <form onSubmit={ this.handleSubmit }>
           <div className="form-group">
-            <label htmlFor="username">Tên dăng nhập:</label>
+            <label htmlFor="username">Email:</label>
             <input 
               type="text" 
               className="form-control" 

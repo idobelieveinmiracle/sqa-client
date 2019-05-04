@@ -68,12 +68,12 @@ export default class ListUsers extends Component {
           <table className="table"> 
             <thead>
               <tr>
-                <th>Id</th>
-                <th>Số chứng minh nhân dân</th>
-                <th>Họ và tên</th>
-                <th>Ngày sinh</th>
-                <th>Tỉnh</th>
-                <th>Xem</th>
+                <th className="col-md-1">Id</th>
+                <th className="col-md-2">Số CMND</th>
+                <th className="col-md-3">Họ và tên</th>
+                <th className="col-md-2">Ngày sinh</th>
+                <th className="col-md-2">Tỉnh/Thành phố</th>
+                <th className="col-md-2">Xem</th>
               </tr>
             </thead>
             <tbody>

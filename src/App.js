@@ -29,7 +29,7 @@ class App extends Component {
     }
 
     Axios.post(`${hostname}/login`, user).then(res => {
-      if (res.data) {
+      if (res.status === 200) {
         this.props.cookies.set('username', user.username);
         this.props.cookies.set('password', user.password);
         this.setState({
@@ -54,6 +54,7 @@ class App extends Component {
     };
 
     Axios.post(url, account).then(res => {
+      console.log(res.status);
       if (res.status === 200) {
         this.props.cookies.set('username', username);
         this.props.cookies.set('password', password);
@@ -63,11 +64,14 @@ class App extends Component {
           role: res.data.role_id,
           id: res.data.id
         })
-      } else {
-        alert("Đăng nhập thất bại");
+      } else if (res.status === 208){
+        alert("Email không tồn tại, vui lòng nhập lại!");
+        this.logout();
+      } else {        
+        alert("Sai mật khẩu, vui lòng nhập lại!");
         this.logout();
       }
-    }).catch(err => {
+    }).catch(() => {
       alert("Đăng nhập thất bại");
       this.logout();
     });
